@@ -11,13 +11,9 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
-
+    "noUnusedLocals": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-
-    "sourceMap": true,
-
     "outDir": "dist"
   },
   "files": ["src/index.tsx"],

@@ -1,15 +1,35 @@
 import styled from "@emotion/styled";
+import { remote } from "electron";
 import * as React from "react";
+import { Link } from "react-router-dom";
+import Person from "../components/icons/Person";
 
 type Props = {};
 
 type State = {};
 
 class SideBar extends React.Component<Props, State> {
+  yell = () => {
+    console.log("OK");
+    const window = remote.getCurrentWebContents().getURL();
+    console.log(window);
+  };
   render() {
     return (
       <Container>
-        <div>Hello</div>
+        <Link to="/">
+          <Tab onClick={this.yell}>
+            <Person />
+            Home
+          </Tab>
+        </Link>
+        <Break />
+        <Link to="/contacts">
+          <Tab onClick={this.yell}>
+            <Person />
+            Contacts
+          </Tab>
+        </Link>
       </Container>
     );
   }
@@ -19,8 +39,26 @@ export default SideBar;
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
+  flex-direction: column;
+  height: calc(100% - 60px);
   min-width: 300px;
-  background-color: rgb(30, 31, 34);
-  border-left: 1px solid rgb(42, 44, 46);
+  background-color: rgb(30, 31, 35);
+  border-right: 1px solid rgb(42, 44, 46);
+  padding-top: 60px;
+`;
+
+const Tab = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+  color: rgb(187, 188, 190);
+  height: 20px;
+  font-size: 16px;
+  :focus {
+    outline: none;
+  }
+`;
+
+const Break = styled.div`
+  height: 10px;
 `;

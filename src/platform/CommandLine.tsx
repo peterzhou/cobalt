@@ -1,10 +1,8 @@
 import styled from "@emotion/styled";
 import * as React from "react";
 import ClickOutside from "../components/ClickOutside";
-import { VIEWS } from "../types";
 type Props = {
   onClickOutside: () => any;
-  view: VIEWS;
 };
 
 type State = {

@@ -1,21 +1,24 @@
-import { History } from "history";
+import styled from "@emotion/styled";
 import * as React from "react";
-import * as Redux from "react-redux";
-import { Provider } from "react-redux";
-import { ConnectedRouter } from "react-router-redux";
-import Routes from "../routes";
+import { MemoryRouter, Route, Switch } from "react-router-dom";
+import ContactsPage from "./ContactsPage";
+import HomePage from "./HomePage";
 
-interface IRootType {
-  store: Redux.Store<any>;
-  history: History;
-}
-
-export default function Root({ store, history }: IRootType) {
+export default function Root() {
   return (
-    <Provider store={store}>
-      <ConnectedRouter history={history}>
-        <Routes />
-      </ConnectedRouter>
-    </Provider>
+    <MemoryRouter>
+      <AppContainer>
+        <Switch>
+          <Route path="/contacts" component={ContactsPage} />
+          <Route path="/" component={HomePage} />
+        </Switch>
+      </AppContainer>
+    </MemoryRouter>
   );
 }
+
+const AppContainer = styled.div`
+  display: flex;
+  min-height: 100vh;
+  min-width: 100vw;
+`;
