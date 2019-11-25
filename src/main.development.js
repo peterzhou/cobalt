@@ -39,9 +39,13 @@ const installExtensions = () => {
 app.on("ready", () =>
   installExtensions().then(() => {
     mainWindow = new BrowserWindow({
+      webPreferences: {
+        nodeIntegration: true,
+      },
+      titleBarStyle: "hidden",
       show: false,
-      width: 1024,
-      height: 728,
+      width: 1400,
+      height: 900,
     });
 
     mainWindow.loadURL(`file://${__dirname}/app.html`);

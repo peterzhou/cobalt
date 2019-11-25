@@ -87,7 +87,6 @@ const TableFooter = styled.div`
   height: 60px;
   width: 100%;
   color: #9785f6;
-  box-shadow: 0 1px 2px 0 #c9c2c2;
 `;
 
 const NumberOfRows = styled.div`
@@ -113,9 +112,7 @@ const PaginationButton = styled.div<{ disabled: boolean }>((props: any) => {
   };
 });
 
-const TableBody = styled.div`
-  box-shadow: 0 1px 2px 0 #c9c2c2;
-`;
+const TableBody = styled.div``;
 
 const TableListings = styled.div`
   display: flex;
