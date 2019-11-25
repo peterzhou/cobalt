@@ -1314,6 +1314,9 @@ const installExtensions = () => {
 app.on("ready", () =>
   installExtensions().then(() => {
     mainWindow = new BrowserWindow({
+      webPreferences: {
+        nodeIntegration: true,
+      },
       titleBarStyle: "hidden",
       show: false,
       width: 1400,
