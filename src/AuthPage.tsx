@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import * as React from "react";
+import { Redirect } from "react-router-dom";
 import Login from "./LogIn";
 import SignUp from "./SignUp";
 
@@ -7,12 +8,21 @@ type Props = {};
 
 type State = {
   isLoginPage: boolean;
+  authToken: string;
 };
 
 class AuthPage extends React.Component<Props, State> {
   state: State = {
     isLoginPage: false,
+    authToken: "",
   };
+
+  async componentDidMount() {
+    const authToken = localStorage.getItem("authToken");
+    this.setState({
+      authToken: authToken || "",
+    });
+  }
 
   setToLogIn = () => {
     this.setState({
@@ -27,6 +37,9 @@ class AuthPage extends React.Component<Props, State> {
   };
 
   render() {
+    if (this.state.authToken) {
+      return <Redirect to="/contacts" />;
+    }
     return (
       <Container>
         {this.state.isLoginPage ? <Login /> : <SignUp />}

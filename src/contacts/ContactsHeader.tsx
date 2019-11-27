@@ -1,33 +1,73 @@
 import styled from "@emotion/styled";
 import * as React from "react";
 import Plus from "../components/icons/Plus";
+import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { Filter } from "../types";
+import AddContactModal from "./AddContactModal";
 
 type Props = {
+  user: CurrentUser_currentUser;
   filters: Filter[];
   currentFilter: number;
 };
 
-type State = {};
+type State = {
+  showNewContactModal: boolean;
+};
 
 class ContactsHeader extends React.Component<Props, State> {
+  state: State = {
+    showNewContactModal: false,
+  };
+
+  componentDidMount() {
+    Mousetrap.bind("n", (event) => {
+      this.showNewContactModal();
+      event.preventDefault();
+    });
+  }
+
+  componentDidUnmount() {
+    Mousetrap.unbind("n");
+  }
+
+  showNewContactModal = () => {
+    this.setState({
+      showNewContactModal: true,
+    });
+  };
+
+  hideNewContactModal = () => {
+    this.setState({
+      showNewContactModal: false,
+    });
+  };
+
   render() {
     return (
-      <Header>
-        {this.props.filters.map((filter, index) => {
-          return (
-            <Filter active={index === this.props.currentFilter}>
-              {filter.name}
-              <Count active={index === this.props.currentFilter}>
-                {filter.count}
-              </Count>
-            </Filter>
-          );
-        })}
-        <NewContactButton>
-          <Plus />
-        </NewContactButton>
-      </Header>
+      <>
+        <Header>
+          {this.props.filters.map((filter, index) => {
+            return (
+              <Filter active={index === this.props.currentFilter}>
+                {filter.name}
+                <Count active={index === this.props.currentFilter}>
+                  {filter.count}
+                </Count>
+              </Filter>
+            );
+          })}
+          <NewContactButton onClick={this.showNewContactModal}>
+            <Plus />
+          </NewContactButton>
+        </Header>
+        {this.state.showNewContactModal && (
+          <AddContactModal
+            onHideModal={this.hideNewContactModal}
+            user={this.props.user}
+          />
+        )}
+      </>
     );
   }
 }

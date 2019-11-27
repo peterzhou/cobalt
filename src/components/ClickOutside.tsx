@@ -2,6 +2,7 @@ import * as React from "react";
 
 type Props = {
   onClickOutside: () => void;
+  style?: any;
 };
 
 export default class ClickOutside extends React.Component<Props> {
@@ -16,10 +17,12 @@ export default class ClickOutside extends React.Component<Props> {
 
   componentDidMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
+    Mousetrap.bind("esc", this.handleClickOutside);
   }
 
   componentWillUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
+    Mousetrap.unbind("esc");
   }
 
   setWrapperRef(node: any) {
@@ -33,6 +36,10 @@ export default class ClickOutside extends React.Component<Props> {
   }
 
   render() {
-    return <div ref={this.setWrapperRef}>{this.props.children}</div>;
+    return (
+      <div ref={this.setWrapperRef} style={this.props.style}>
+        {this.props.children}
+      </div>
+    );
   }
 }

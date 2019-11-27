@@ -4,7 +4,6 @@ import * as React from "react";
 import { ApolloProvider } from "react-apollo";
 import { MemoryRouter, Route, Switch } from "react-router-dom";
 import AuthPage from "../AuthPage";
-import { getElectronState } from "../renderer/state";
 import { getBackendUrl } from "../utils";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
@@ -12,13 +11,11 @@ import HomePage from "./HomePage";
 const client = new ApolloClient<InMemoryCache>({
   uri: getBackendUrl(),
   request: (operation) => {
-    const { authToken } = getElectronState();
     const localStorageToken = localStorage.getItem("authToken");
-    const useToken = authToken || localStorageToken;
-    if (useToken) {
+    if (localStorageToken) {
       operation.setContext({
         headers: {
-          authorization: useToken ? `Bearer ${useToken}` : "",
+          authorization: localStorageToken ? `Bearer ${localStorageToken}` : "",
         },
       });
     }
@@ -26,25 +23,14 @@ const client = new ApolloClient<InMemoryCache>({
 });
 
 export default function Root() {
-  const { loggedIn } = window as any;
-
-  if (!loggedIn) {
-    return (
-      <AppContainer>
-        <ApolloProvider client={client}>
-          <AuthPage />
-        </ApolloProvider>
-      </AppContainer>
-    );
-  }
-
   return (
     <MemoryRouter>
       <AppContainer>
         <ApolloProvider client={client}>
           <Switch>
             <Route path="/contacts" component={ContactsPage} />
-            <Route path="/" component={HomePage} />
+            <Route path="/home" component={HomePage} />
+            <Route path="/" component={AuthPage} />
           </Switch>
         </ApolloProvider>
       </AppContainer>

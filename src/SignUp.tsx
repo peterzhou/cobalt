@@ -2,10 +2,11 @@ import styled from "@emotion/styled";
 import gql from "graphql-tag";
 import * as React from "react";
 import { Mutation, MutationResult } from "react-apollo";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import { getFrontendUrl } from "./utils";
+import { getFrontendUrl, validateEmail } from "./utils";
 
-type Props = {};
+type Props = {} & RouteComponentProps;
 
 type State = {
   email: string;
@@ -99,11 +100,6 @@ class SignUp extends React.Component<Props, State> {
     }
   };
 
-  validateEmail = (email: string) => {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  };
-
   validateFields = (): boolean => {
     if (this.state.fullName == "") {
       this.setState({
@@ -111,7 +107,7 @@ class SignUp extends React.Component<Props, State> {
       });
       return false;
     }
-    if (this.state.email == "" || !this.validateEmail(this.state.email)) {
+    if (this.state.email == "" || !validateEmail(this.state.email)) {
       this.setState({
         error: SIGN_UP_ERRORS.BadEmail,
       });
@@ -172,8 +168,11 @@ class SignUp extends React.Component<Props, State> {
         break;
     }
 
-    const handleCompleted = (data: any) => {
-      console.log("TODO");
+    const handleCompleted = async (data: any) => {
+      if (data.signup && data.signup.token) {
+        localStorage.setItem("authToken", data.signup.token as any);
+        this.props.history.push("/home");
+      }
     };
 
     return (
@@ -274,7 +273,7 @@ class SignUp extends React.Component<Props, State> {
   }
 }
 
-export default SignUp;
+export default withRouter(SignUp);
 
 export const Container = styled.div`
   display: flex;

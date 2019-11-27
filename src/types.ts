@@ -28,3 +28,7 @@ export type Filter = {
   name: string;
   count: number;
 };
+
+export enum CREATE_CONTACT_ERROR {
+  EMAIL = "EMAIL"
+}

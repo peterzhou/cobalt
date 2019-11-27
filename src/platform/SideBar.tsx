@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { remote } from "electron";
 import * as React from "react";
 import { Link } from "react-router-dom";
 import Person from "../components/icons/Person";
@@ -9,23 +8,18 @@ type Props = {};
 type State = {};
 
 class SideBar extends React.Component<Props, State> {
-  yell = () => {
-    console.log("OK");
-    const window = remote.getCurrentWebContents().getURL();
-    console.log(window);
-  };
   render() {
     return (
       <Container>
         <Link to="/">
-          <Tab onClick={this.yell}>
+          <Tab>
             <Person />
             Home
           </Tab>
         </Link>
         <Break />
         <Link to="/contacts">
-          <Tab onClick={this.yell}>
+          <Tab>
             <Person />
             Contacts
           </Tab>

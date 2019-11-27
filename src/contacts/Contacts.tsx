@@ -1,47 +1,19 @@
 import styled from "@emotion/styled";
 import * as React from "react";
 import Table from "../components/Table";
+import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { Contact } from "../types";
 import ContactRow from "./ContactRow";
 import ContactsHeader from "./ContactsHeader";
 
-type Props = {};
+type Props = {
+  user: CurrentUser_currentUser;
+};
 
 type State = {
   focusedIndex: number;
   focusedFilter: number;
 };
-
-const CONTACT_LIST: Contact[] = [
-  {
-    id: "1",
-    firstName: "Peter",
-    lastName: "Zhou",
-    company: null,
-    assignee: null,
-  },
-  {
-    id: "2",
-    firstName: "Eric",
-    lastName: "Yu",
-    company: null,
-    assignee: null,
-  },
-  {
-    id: "3",
-    firstName: "Klaire",
-    lastName: "Tan",
-    company: null,
-    assignee: null,
-  },
-  {
-    id: "4",
-    firstName: "Sarah",
-    lastName: "Wooders",
-    company: null,
-    assignee: null,
-  },
-];
 
 const FILTERS = [
   { user: null, id: "1", name: "All Contacts", count: 126 },
@@ -61,8 +33,15 @@ class Contacts extends React.Component<Props, State> {
     Mousetrap.bind("shift+tab", this.previousFilter);
   }
 
+  componentDidUnmount() {
+    Mousetrap.unbind("j");
+    Mousetrap.unbind("k");
+    Mousetrap.unbind("tab");
+    Mousetrap.unbind("shift+tab");
+  }
+
   focusNextElement = () => {
-    if (this.state.focusedIndex >= CONTACT_LIST.length - 1) {
+    if (this.state.focusedIndex >= this.props.user.contacts.length - 1) {
       return;
     }
     this.setState({
@@ -109,6 +88,7 @@ class Contacts extends React.Component<Props, State> {
     return (
       <Container>
         <ContactsHeader
+          user={this.props.user}
           currentFilter={this.state.focusedFilter}
           filters={FILTERS}
         />
@@ -121,7 +101,7 @@ class Contacts extends React.Component<Props, State> {
           totalCount={100}
           elementName="Contacts"
           disableNext={false}
-          tableArray={CONTACT_LIST}
+          tableArray={this.props.user.contacts}
           tableListing={this.getContactListing}
         />
       </Container>

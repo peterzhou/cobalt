@@ -76,7 +76,7 @@ const CheckBox = styled.input`
 const TableContainer = styled.div`
   display: flex;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 60px);
   flex-direction: column;
 `;
 
