@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import Table from "../components/Table";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { Contact } from "../types";
@@ -8,7 +9,7 @@ import ContactsHeader from "./ContactsHeader";
 
 type Props = {
   user: CurrentUser_currentUser;
-};
+} & RouteComponentProps;
 
 type State = {
   focusedIndex: number;
@@ -31,14 +32,21 @@ class Contacts extends React.Component<Props, State> {
     Mousetrap.bind("k", this.focusPreviousElement);
     Mousetrap.bind("tab", this.nextFilter);
     Mousetrap.bind("shift+tab", this.previousFilter);
+    Mousetrap.bind("enter", this.redirectToContact);
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     Mousetrap.unbind("j");
     Mousetrap.unbind("k");
     Mousetrap.unbind("tab");
     Mousetrap.unbind("shift+tab");
+    Mousetrap.unbind("enter");
   }
+
+  redirectToContact = () => {
+    const contactId = this.props.user.contacts[this.state.focusedIndex].id;
+    this.props.history.push(`/contact?id=${contactId}`);
+  };
 
   focusNextElement = () => {
     if (this.state.focusedIndex >= this.props.user.contacts.length - 1) {
@@ -109,15 +117,11 @@ class Contacts extends React.Component<Props, State> {
   }
 }
 
-export default Contacts;
+export default withRouter(Contacts);
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
-`;
-
-const Header = styled.div`
-  height: 60px;
 `;

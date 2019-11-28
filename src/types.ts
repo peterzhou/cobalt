@@ -1,5 +1,6 @@
-export enum VIEWS {
+export enum TAB {
   HOME = "HOME",
+  CONTACTS = "CONTACTS",
 }
 
 export type User = {
@@ -30,5 +31,5 @@ export type Filter = {
 };
 
 export enum CREATE_CONTACT_ERROR {
-  EMAIL = "EMAIL"
+  EMAIL = "EMAIL",
 }

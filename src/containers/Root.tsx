@@ -5,6 +5,7 @@ import { ApolloProvider } from "react-apollo";
 import { MemoryRouter, Route, Switch } from "react-router-dom";
 import AuthPage from "../AuthPage";
 import { getBackendUrl } from "../utils";
+import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
 
@@ -28,6 +29,7 @@ export default function Root() {
       <AppContainer>
         <ApolloProvider client={client}>
           <Switch>
+            <Route path="/contact" component={ContactPage} />
             <Route path="/contacts" component={ContactsPage} />
             <Route path="/home" component={HomePage} />
             <Route path="/" component={AuthPage} />

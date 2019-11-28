@@ -66,13 +66,6 @@ function DashboardTable(props: Props) {
 
 export default DashboardTable;
 
-const CheckBox = styled.input`
-  margin-left: 20px;
-  margin-right: 10px;
-  flex: none;
-  transform: scale(1.2);
-`;
-
 const TableContainer = styled.div`
   display: flex;
   width: 100%;
@@ -86,7 +79,7 @@ const TableFooter = styled.div`
   align-items: center;
   height: 60px;
   width: 100%;
-  color: #9785f6;
+  color: rgb(97, 111, 196);
 `;
 
 const NumberOfRows = styled.div`
@@ -133,7 +126,7 @@ const HeaderClick = styled.div<{ onlyHeader: boolean; hasSelect: boolean }>`
   color: #b8b6b6;
   cursor: pointer;
   &:hover {
-    color: #9785f6;
+    color: rgb(97, 111, 196);
   }
   transition: 0.16s ease-in-out;
 `;

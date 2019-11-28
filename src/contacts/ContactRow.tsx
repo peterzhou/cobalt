@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
 import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import Checkbox from "../components/Checkbox";
 import { Contact } from "../types";
-
 type Props = {
   contact: Contact;
   focused: boolean;
-};
+} & RouteComponentProps;
 
 type State = {
   checked: boolean;
@@ -23,9 +23,13 @@ class ContactRow extends React.Component<Props, State> {
     });
   };
 
+  redirectToContact = () => {
+    this.props.history.push(`/contact?id=${this.props.contact.id}`);
+  };
+
   render() {
     return (
-      <Container focused={this.props.focused}>
+      <Container focused={this.props.focused} onClick={this.redirectToContact}>
         <Checkbox
           checked={this.state.checked}
           onChange={this.onCheckboxChange}
@@ -38,10 +42,11 @@ class ContactRow extends React.Component<Props, State> {
   }
 }
 
-export default ContactRow;
+export default withRouter(ContactRow);
 
 const Container = styled.div<{ focused: boolean }>`
   display: flex;
+  cursor: pointer;
   padding: 10px;
   color: rgb(187, 188, 190);
   background-color: ${(props) =>

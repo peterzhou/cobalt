@@ -1,6 +1,7 @@
 import * as Mousetrap from "mousetrap";
 import * as React from "react";
 import DashboardShell from "./components/DashboardShell";
+import { TAB } from "./types";
 
 type Props = {};
 
@@ -35,6 +36,8 @@ export default class Home extends React.Component<Props, State> {
 
   render() {
     const currentComponent = <div style={{ color: "#ffffff" }}>Current</div>;
-    return <DashboardShell>{currentComponent}</DashboardShell>;
+    return (
+      <DashboardShell activeTab={TAB.HOME}>{currentComponent}</DashboardShell>
+    );
   }
 }

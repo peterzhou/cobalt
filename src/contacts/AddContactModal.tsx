@@ -8,6 +8,7 @@ import Shortcut from "../components/Shortcut";
 import { Button, Input } from "../components/StyledComponents";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { CREATE_CONTACT } from "../graphql/mutations";
+import { CURRENT_USER } from "../graphql/queries";
 import { CREATE_CONTACT_ERROR } from "../types";
 import { validateEmail } from "../utils";
 
@@ -25,6 +26,8 @@ type State = {
 };
 
 class AddContactModal extends React.Component<Props, State> {
+  emailRef = React.createRef<HTMLInputElement>();
+
   state: State = {
     email: "",
     firstName: "",
@@ -40,12 +43,13 @@ class AddContactModal extends React.Component<Props, State> {
     });
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     Mousetrap.unbind("command+enter");
     Mousetrap.unbind("enter");
   }
 
-  bubbleUpEscape = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    //
     if (event.key === "Escape") {
       this.props.onHideModal();
     }
@@ -91,6 +95,17 @@ class AddContactModal extends React.Component<Props, State> {
 
   onCreateContact = (data: any) => {
     console.log(data);
+    if (this.state.anotherContact) {
+      this.setState({
+        email: "",
+        firstName: "",
+        lastName: "",
+        error: null,
+      });
+      this.emailRef.current && this.emailRef.current.focus();
+    } else {
+      this.props.onHideModal();
+    }
   };
 
   render() {
@@ -106,29 +121,31 @@ class AddContactModal extends React.Component<Props, State> {
               <Body>
                 <Label>EMAIL</Label>
                 <Input
+                  ref={this.emailRef}
                   placeholder="Email"
                   value={this.state.email}
                   onChange={this.onChangeEmail}
                   autoFocus
-                  onKeyDown={this.bubbleUpEscape}
+                  onKeyDown={this.captureInputKeys}
                 />
                 <Label>FIRST NAME</Label>
                 <Input
                   placeholder="First Name"
                   value={this.state.firstName}
                   onChange={this.onChangeFirstName}
-                  onKeyDown={this.bubbleUpEscape}
+                  onKeyDown={this.captureInputKeys}
                 />
                 <Label>LAST NAME</Label>
                 <Input
                   placeholder="Last Name"
                   value={this.state.lastName}
                   onChange={this.onChangeLastName}
-                  onKeyDown={this.bubbleUpEscape}
+                  onKeyDown={this.captureInputKeys}
                 />
                 <Mutation
                   mutation={CREATE_CONTACT}
-                  onCompleted={this.onCreateContact}>
+                  onCompleted={this.onCreateContact}
+                  refetchQueries={[{ query: CURRENT_USER }]}>
                   {(
                     createContact: MutationFunction,
                     { data, loading }: MutationResult,
@@ -144,6 +161,17 @@ class AddContactModal extends React.Component<Props, State> {
                             email: this.state.email,
                             firstName: this.state.firstName,
                             lastName: this.state.lastName,
+                          },
+                        },
+                        optimisticResponse: {
+                          createContact: {
+                            assignee: {
+                              id: this.props.user.id,
+                              __typename: "User",
+                            },
+                            firstName: this.state.firstName,
+                            lastName: this.state.lastName,
+                            __typename: "Contact",
                           },
                         },
                       });

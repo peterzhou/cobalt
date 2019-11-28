@@ -5,11 +5,6 @@ const CheckboxContainer = styled.div`
   vertical-align: middle;
 `;
 
-const Icon = styled.svg`
-  fill: none;
-  stroke: white;
-  stroke-width: 2px;
-`;
 // Hide checkbox visually but remain accessible to screen readers.
 // Source: https://polished.js.org/docs/#hidevisually
 const HiddenCheckbox = styled.input`
@@ -43,12 +38,13 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
 const Checkbox = ({ checked, onChange }: any) => {
   return (
     <CheckboxContainer>
-      <HiddenCheckbox checked={checked} type="checkbox" />
+      <HiddenCheckbox checked={checked} type="checkbox" readOnly />
       <StyledCheckbox
         checked={checked}
         onClick={(event) => {
           onChange();
           event.preventDefault();
+          event.stopPropagation();
         }}></StyledCheckbox>
     </CheckboxContainer>
   );

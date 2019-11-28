@@ -3,9 +3,11 @@ import * as Mousetrap from "mousetrap";
 import * as React from "react";
 import CommandLine from "../platform/CommandLine";
 import SideBar from "../platform/SideBar";
+import { TAB } from "../types";
 
 type Props = {
   children: any;
+  activeTab: TAB;
 };
 
 type State = {
@@ -41,7 +43,7 @@ export default class Home extends React.Component<Props, State> {
     return (
       <>
         <Container>
-          <SideBar />
+          <SideBar activeTab={this.props.activeTab} />
           <MainContainer>{this.props.children}</MainContainer>
         </Container>
         {this.state.isCommandLineOpen && (

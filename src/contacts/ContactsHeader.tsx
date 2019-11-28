@@ -27,7 +27,7 @@ class ContactsHeader extends React.Component<Props, State> {
     });
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     Mousetrap.unbind("n");
   }
 
@@ -49,12 +49,14 @@ class ContactsHeader extends React.Component<Props, State> {
         <Header>
           {this.props.filters.map((filter, index) => {
             return (
-              <Filter active={index === this.props.currentFilter}>
+              <FilterContainer
+                active={index === this.props.currentFilter}
+                key={index}>
                 {filter.name}
                 <Count active={index === this.props.currentFilter}>
                   {filter.count}
                 </Count>
-              </Filter>
+              </FilterContainer>
             );
           })}
           <NewContactButton onClick={this.showNewContactModal}>
@@ -80,7 +82,7 @@ const Header = styled.div`
   height: 60px;
 `;
 
-const Filter = styled.div<{ active: boolean }>`
+const FilterContainer = styled.div<{ active: boolean }>`
   display: flex;
   align-items: center;
   margin-left: 30px;

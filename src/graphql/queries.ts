@@ -13,3 +13,17 @@ export const CURRENT_USER = gql`
     }
   }
 `;
+
+export const CURRENT_USER_WITH_CONTACT = gql`
+  query CurrentUserWithContact($id: ID!) {
+    currentUser {
+      id
+      email
+      contact(id: $id) {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
