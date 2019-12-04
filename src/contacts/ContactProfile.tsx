@@ -31,7 +31,7 @@ const Container = styled.div`
   padding: 40px;
   width: 400px;
   height: 100%;
-  border-right: 1px solid rgb(45, 47, 49);
+  border-left: 1px solid rgb(45, 47, 49);
 `;
 
 const ProfilePicture = styled.div`

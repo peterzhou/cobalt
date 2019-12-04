@@ -1,13 +1,16 @@
-import styled from "@emotion/styled";
-import ApolloClient, { InMemoryCache } from "apollo-boost";
 import * as React from "react";
-import { ApolloProvider } from "react-apollo";
+
+import ApolloClient, { InMemoryCache } from "apollo-boost";
 import { MemoryRouter, Route, Switch } from "react-router-dom";
+
+import { ApolloProvider } from "react-apollo";
 import AuthPage from "../AuthPage";
-import { getBackendUrl } from "../utils";
 import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
+import SettingsPage from "./SettingsPage";
+import { getBackendUrl } from "../utils";
+import styled from "@emotion/styled";
 
 const client = new ApolloClient<InMemoryCache>({
   uri: getBackendUrl(),
@@ -29,6 +32,7 @@ export default function Root() {
       <AppContainer>
         <ApolloProvider client={client}>
           <Switch>
+            <Route path="/settings" component={SettingsPage} />
             <Route path="/contact" component={ContactPage} />
             <Route path="/contacts" component={ContactsPage} />
             <Route path="/home" component={HomePage} />

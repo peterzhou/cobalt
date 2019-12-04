@@ -1,9 +1,10 @@
-import styled from "@emotion/styled";
 import * as React from "react";
-import { Link } from "react-router-dom";
+
 import Home from "../components/icons/Home";
+import { Link } from "react-router-dom";
 import Person from "../components/icons/Person";
 import { TAB } from "../types";
+import styled from "@emotion/styled";
 
 type Props = {
   activeTab: TAB;
@@ -26,6 +27,13 @@ class SideBar extends React.Component<Props, State> {
           <Tab active={this.props.activeTab === TAB.CONTACTS}>
             <Person active={this.props.activeTab === TAB.CONTACTS} />
             Contacts
+          </Tab>
+        </Link>
+        <Break />
+        <Link to="/settings">
+          <Tab active={this.props.activeTab === TAB.SETTINGS}>
+            <Home active={this.props.activeTab === TAB.SETTINGS} />
+            Settings
           </Tab>
         </Link>
       </Container>

@@ -1,8 +1,9 @@
-import styled from "@emotion/styled";
 import * as React from "react";
-import { Redirect } from "react-router-dom";
+
 import Login from "./LogIn";
+import { Redirect } from "react-router-dom";
 import SignUp from "./SignUp";
+import styled from "@emotion/styled";
 
 type Props = {};
 
@@ -38,7 +39,7 @@ class AuthPage extends React.Component<Props, State> {
 
   render() {
     if (this.state.authToken) {
-      return <Redirect to="/contacts" />;
+      return <Redirect to="/settings" />;
     }
     return (
       <Container>

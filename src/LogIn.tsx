@@ -1,8 +1,10 @@
-import styled from "@emotion/styled";
-import gql from "graphql-tag";
 import * as React from "react";
+
 import { Mutation, MutationResult } from "react-apollo";
+
 import ClipLoader from "react-spinners/ClipLoader";
+import gql from "graphql-tag";
+import styled from "@emotion/styled";
 
 const LOG_IN = gql`
   mutation LogIn($input: LoginInput!) {

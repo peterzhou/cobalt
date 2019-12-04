@@ -27,3 +27,17 @@ export const CURRENT_USER_WITH_CONTACT = gql`
     }
   }
 `;
+
+export const CURRENT_USER_WITH_GOOGLE_AUTH = gql`
+  query CurrentUserWithGoogleAuth {
+    currentUser {
+      id
+      email
+      googleAuth {
+        accessToken
+        refreshToken
+        expiryDate
+      }
+    }
+  }
+`;

@@ -31,8 +31,8 @@ class Contact extends React.Component<Props, State> {
     }
     return (
       <Container>
-        <ContactProfile contact={this.props.user.contact} />
         <ContactActivityLog contact={this.props.user.contact} />
+        <ContactProfile contact={this.props.user.contact} />
       </Container>
     );
   }

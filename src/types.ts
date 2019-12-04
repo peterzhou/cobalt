@@ -1,6 +1,7 @@
 export enum TAB {
   HOME = "HOME",
   CONTACTS = "CONTACTS",
+  SETTINGS = "SETTINGS",
 }
 
 export type User = {

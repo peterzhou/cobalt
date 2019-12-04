@@ -12,3 +12,9 @@ export const CREATE_CONTACT = gql`
     }
   }
 `;
+
+export const ADD_GOOGLE_AUTH = gql`
+  mutation AddGoogleAuth {
+    addGoogleAuth
+  }
+`;
