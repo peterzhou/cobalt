@@ -1,18 +1,44 @@
-import * as React from "react";
-
-import Home from "../components/icons/Home";
-import { Link } from "react-router-dom";
-import Person from "../components/icons/Person";
-import { TAB } from "../types";
 import styled from "@emotion/styled";
+import * as React from "react";
+import { Link, RouteComponentProps, withRouter } from "react-router-dom";
+import Home from "../components/icons/Home";
+import Person from "../components/icons/Person";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { ShortcutProps, TAB } from "../types";
 
 type Props = {
   activeTab: TAB;
-};
+} & ShortcutProps &
+  RouteComponentProps;
 
 type State = {};
 
 class SideBar extends React.Component<Props, State> {
+  componentDidMount() {
+    this.props.manager.bind("g h", () => {
+      this.props.history.push("/home");
+    });
+
+    this.props.manager.bind("g s", () => {
+      this.props.history.push("/settings");
+    });
+
+    this.props.manager.bind("g c", () => {
+      this.props.history.push("/contacts");
+    });
+
+    this.props.manager.bind("g a", () => {
+      this.props.history.push("/automation");
+    });
+  }
+
+  componentWillUnmount() {
+    this.props.manager.unbind("g h");
+    this.props.manager.unbind("g s");
+    this.props.manager.unbind("g c");
+    this.props.manager.unbind("g a");
+  }
+
   render() {
     return (
       <Container>
@@ -36,12 +62,19 @@ class SideBar extends React.Component<Props, State> {
             Settings
           </Tab>
         </Link>
+        <Break />
+        <Link to="/automation">
+          <Tab active={this.props.activeTab === TAB.AUTOMATION}>
+            <Home active={this.props.activeTab === TAB.AUTOMATION} />
+            Automation
+          </Tab>
+        </Link>
       </Container>
     );
   }
 }
 
-export default SideBar;
+export default withShortcuts(withRouter(SideBar));
 
 const Container = styled.div`
   display: flex;

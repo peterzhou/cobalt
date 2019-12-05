@@ -1,31 +1,36 @@
-import * as Mousetrap from "mousetrap";
 import * as React from "react";
 import DashboardShell from "./components/DashboardShell";
-import { TAB } from "./types";
+import withShortcuts from "./shortcuts/withShortcuts";
+import { ShortcutProps, TAB } from "./types";
 
-type Props = {};
+type Props = {} & ShortcutProps;
 
 type State = {
   isCommandLineOpen: boolean;
 };
 
-export default class Home extends React.Component<Props, State> {
+class Home extends React.Component<Props, State> {
   state: State = {
     isCommandLineOpen: false,
   };
 
   componentDidMount() {
-    Mousetrap.bind("command+k", () => {
-      console.log("YA");
+    this.props.manager.bind("command+k", () => {
       this.setState({
         isCommandLineOpen: true,
       });
     });
-    Mousetrap.bind("esc", () => {
+    this.props.manager.bind("esc", () => {
+      console.log("WHAT THE FUCK");
       this.setState({
         isCommandLineOpen: false,
       });
     });
+  }
+
+  componentWillUnmount() {
+    this.props.manager.unbind("command+k");
+    this.props.manager.unbind("esc");
   }
 
   hideCommandLine = () => {
@@ -41,3 +46,5 @@ export default class Home extends React.Component<Props, State> {
     );
   }
 }
+
+export default withShortcuts(Home);

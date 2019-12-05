@@ -2,20 +2,21 @@ import styled from "@emotion/styled";
 import * as React from "react";
 import { Mutation, MutationFunction, MutationResult } from "react-apollo";
 import ClickOutside from "../components/ClickOutside";
-import Command from "../components/Keys/Command";
-import Enter from "../components/Keys/Enter";
+import Command from "../components/icons/Keys/Command";
+import Enter from "../components/icons/Keys/Enter";
 import Shortcut from "../components/Shortcut";
 import { Button, Input } from "../components/StyledComponents";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { CREATE_CONTACT } from "../graphql/mutations";
 import { CURRENT_USER } from "../graphql/queries";
-import { CREATE_CONTACT_ERROR } from "../types";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { CREATE_CONTACT_ERROR, ShortcutProps } from "../types";
 import { validateEmail } from "../utils";
 
 type Props = {
   user: CurrentUser_currentUser;
   onHideModal: () => any;
-};
+} & ShortcutProps;
 
 type State = {
   email: string;
@@ -38,14 +39,14 @@ class AddContactModal extends React.Component<Props, State> {
 
   componentDidMount() {
     // Prevent tab switching when at modal
-    Mousetrap.bind("tab", (ev) => {
+    this.props.manager.bind("tab", (ev: any) => {
       ev.stopPropagation();
     });
   }
 
   componentWillUnmount() {
-    Mousetrap.unbind("command+enter");
-    Mousetrap.unbind("enter");
+    this.props.manager.unbind("command+enter");
+    this.props.manager.unbind("enter");
   }
 
   captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -94,7 +95,6 @@ class AddContactModal extends React.Component<Props, State> {
   };
 
   onCreateContact = (data: any) => {
-    console.log(data);
     if (this.state.anotherContact) {
       this.setState({
         email: "",
@@ -188,10 +188,10 @@ class AddContactModal extends React.Component<Props, State> {
                       );
                     };
 
-                    Mousetrap.bind("enter", () => {
+                    this.props.manager.bind("enter", () => {
                       submitContact(true);
                     });
-                    Mousetrap.bind("command+enter", () => {
+                    this.props.manager.bind("command+enter", () => {
                       submitContact(false);
                     });
                     return (
@@ -229,7 +229,7 @@ class AddContactModal extends React.Component<Props, State> {
   }
 }
 
-export default AddContactModal;
+export default withShortcuts(AddContactModal);
 
 const StyledShortcut = styled(Shortcut)`
   margin-left: 4px;
@@ -258,7 +258,7 @@ const Label = styled.div`
   display: flex;
   margin-bottom: 4px;
   margin-top: 10px;
-  :first-child {
+  :first-div {
     margin-top: 0px;
   }
 `;

@@ -2,14 +2,15 @@ import styled from "@emotion/styled";
 import * as React from "react";
 import Plus from "../components/icons/Plus";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
-import { Filter } from "../types";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { Filter, ShortcutProps } from "../types";
 import AddContactModal from "./AddContactModal";
 
 type Props = {
   user: CurrentUser_currentUser;
   filters: Filter[];
   currentFilter: number;
-};
+} & ShortcutProps;
 
 type State = {
   showNewContactModal: boolean;
@@ -21,14 +22,14 @@ class ContactsHeader extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    Mousetrap.bind("n", (event) => {
+    this.props.manager.bind("n", (event: any) => {
       this.showNewContactModal();
       event.preventDefault();
     });
   }
 
   componentWillUnmount() {
-    Mousetrap.unbind("n");
+    this.props.manager.unbind("n");
   }
 
   showNewContactModal = () => {
@@ -38,6 +39,7 @@ class ContactsHeader extends React.Component<Props, State> {
   };
 
   hideNewContactModal = () => {
+    console.log("FUCK");
     this.setState({
       showNewContactModal: false,
     });
@@ -74,7 +76,7 @@ class ContactsHeader extends React.Component<Props, State> {
   }
 }
 
-export default ContactsHeader;
+export default withShortcuts(ContactsHeader);
 
 const Header = styled.div`
   display: flex;

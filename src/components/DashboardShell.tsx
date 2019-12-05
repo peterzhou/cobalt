@@ -1,32 +1,32 @@
 import styled from "@emotion/styled";
-import * as Mousetrap from "mousetrap";
 import * as React from "react";
 import CommandLine from "../platform/CommandLine";
 import SideBar from "../platform/SideBar";
-import { TAB } from "../types";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { ShortcutProps, TAB } from "../types";
 
 type Props = {
   children: any;
   activeTab: TAB;
-};
+} & ShortcutProps;
 
 type State = {
   isCommandLineOpen: boolean;
 };
 
-export default class Home extends React.Component<Props, State> {
+class DashboardShell extends React.Component<Props, State> {
   state: State = {
     isCommandLineOpen: false,
   };
 
   componentDidMount() {
-    Mousetrap.bind("command+k", () => {
+    this.props.manager.bind("command+k", () => {
       console.log("YA");
       this.setState({
         isCommandLineOpen: true,
       });
     });
-    Mousetrap.bind("esc", () => {
+    this.props.manager.bind("esc", () => {
       this.setState({
         isCommandLineOpen: false,
       });
@@ -40,6 +40,8 @@ export default class Home extends React.Component<Props, State> {
   };
 
   render() {
+    console.log(this.props.manager);
+    console.log(this.props.manager.activeShortcuts);
     return (
       <>
         <Container>
@@ -53,6 +55,8 @@ export default class Home extends React.Component<Props, State> {
     );
   }
 }
+
+export default withShortcuts(DashboardShell);
 
 const Container = styled.div`
   display: flex;

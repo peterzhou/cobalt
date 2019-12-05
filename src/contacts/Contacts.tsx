@@ -3,13 +3,15 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import Table from "../components/Table";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
-import { Contact } from "../types";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { Contact, ShortcutProps } from "../types";
 import ContactRow from "./ContactRow";
 import ContactsHeader from "./ContactsHeader";
 
 type Props = {
   user: CurrentUser_currentUser;
-} & RouteComponentProps;
+} & RouteComponentProps &
+  ShortcutProps;
 
 type State = {
   focusedIndex: number;
@@ -28,19 +30,19 @@ class Contacts extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    Mousetrap.bind("j", this.focusNextElement);
-    Mousetrap.bind("k", this.focusPreviousElement);
-    Mousetrap.bind("tab", this.nextFilter);
-    Mousetrap.bind("shift+tab", this.previousFilter);
-    Mousetrap.bind("enter", this.redirectToContact);
+    this.props.manager.bind("j", this.focusNextElement);
+    this.props.manager.bind("k", this.focusPreviousElement);
+    this.props.manager.bind("tab", this.nextFilter);
+    this.props.manager.bind("shift+tab", this.previousFilter);
+    this.props.manager.bind("enter", this.redirectToContact);
   }
 
   componentWillUnmount() {
-    Mousetrap.unbind("j");
-    Mousetrap.unbind("k");
-    Mousetrap.unbind("tab");
-    Mousetrap.unbind("shift+tab");
-    Mousetrap.unbind("enter");
+    this.props.manager.unbind("j");
+    this.props.manager.unbind("k");
+    this.props.manager.unbind("tab");
+    this.props.manager.unbind("shift+tab");
+    this.props.manager.unbind("enter");
   }
 
   redirectToContact = () => {
@@ -117,7 +119,7 @@ class Contacts extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(Contacts);
+export default withRouter(withShortcuts(Contacts));
 
 const Container = styled.div`
   display: flex;

@@ -2,26 +2,30 @@ import styled from "@emotion/styled";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { CurrentUserWithContact_currentUser } from "../graphql/generated/types";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { ShortcutProps } from "../types";
 import ContactActivityLog from "./ContactActivityLog";
 import ContactProfile from "./ContactProfile";
 
 type Props = {
   user: CurrentUserWithContact_currentUser;
-} & RouteComponentProps;
+} & RouteComponentProps &
+  ShortcutProps;
 
 type State = {};
 
 class Contact extends React.Component<Props, State> {
   // TODO: Bug with Mousetrap not firing
   componentDidMount() {
-    Mousetrap.bind("esc", this.redirectBack);
+    this.props.manager.bind("esc", this.redirectBack);
   }
 
   componentWillUnmount() {
-    Mousetrap.unbind("esc");
+    this.props.manager.unbind("esc");
   }
 
   redirectBack = () => {
+    console.log("IM TRYING");
     this.props.history.goBack();
   };
 
@@ -38,7 +42,7 @@ class Contact extends React.Component<Props, State> {
   }
 }
 
-export default withRouter(Contact);
+export default withRouter(withShortcuts(Contact));
 
 const Container = styled.div`
   display: flex;

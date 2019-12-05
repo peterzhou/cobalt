@@ -1,11 +1,12 @@
 import * as React from "react";
-
+import withShortcuts from "../shortcuts/withShortcuts";
+import { ShortcutProps } from "../types";
 type Props = {
   onClickOutside: () => void;
   style?: any;
-};
+} & ShortcutProps;
 
-export default class ClickOutside extends React.Component<Props> {
+class ClickOutside extends React.Component<Props> {
   wrapperRef: any;
 
   constructor(props: Props) {
@@ -17,12 +18,12 @@ export default class ClickOutside extends React.Component<Props> {
 
   componentDidMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
-    Mousetrap.bind("esc", this.handleClickOutside);
+    this.props.manager.bind("esc", this.handleClickOutside);
   }
 
   componentWillUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
-    Mousetrap.unbind("esc");
+    this.props.manager.unbind("esc");
   }
 
   setWrapperRef(node: any) {
@@ -43,3 +44,5 @@ export default class ClickOutside extends React.Component<Props> {
     );
   }
 }
+
+export default withShortcuts(ClickOutside);

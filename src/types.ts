@@ -2,7 +2,12 @@ export enum TAB {
   HOME = "HOME",
   CONTACTS = "CONTACTS",
   SETTINGS = "SETTINGS",
+  AUTOMATION = "AUTOMATION",
 }
+
+export type ShortcutProps = {
+  manager: any;
+};
 
 export type User = {
   id: string;

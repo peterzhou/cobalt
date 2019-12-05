@@ -1,16 +1,16 @@
-import * as React from "react";
-
+import styled from "@emotion/styled";
 import ApolloClient, { InMemoryCache } from "apollo-boost";
-import { MemoryRouter, Route, Switch } from "react-router-dom";
-
+import * as React from "react";
 import { ApolloProvider } from "react-apollo";
+import { MemoryRouter, Route, Switch } from "react-router-dom";
 import AuthPage from "../AuthPage";
+import ShortcutContext from "../shortcuts/shortcutContext";
+import ShortcutManager from "../shortcuts/ShortcutManager";
+import { getBackendUrl } from "../utils";
 import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
 import SettingsPage from "./SettingsPage";
-import { getBackendUrl } from "../utils";
-import styled from "@emotion/styled";
 
 const client = new ApolloClient<InMemoryCache>({
   uri: getBackendUrl(),
@@ -27,18 +27,21 @@ const client = new ApolloClient<InMemoryCache>({
 });
 
 export default function Root() {
+  const shortcutManager = new ShortcutManager();
   return (
     <MemoryRouter>
       <AppContainer>
-        <ApolloProvider client={client}>
-          <Switch>
-            <Route path="/settings" component={SettingsPage} />
-            <Route path="/contact" component={ContactPage} />
-            <Route path="/contacts" component={ContactsPage} />
-            <Route path="/home" component={HomePage} />
-            <Route path="/" component={AuthPage} />
-          </Switch>
-        </ApolloProvider>
+        <ShortcutContext.Provider value={{ manager: shortcutManager }}>
+          <ApolloProvider client={client}>
+            <Switch>
+              <Route path="/settings" component={SettingsPage} />
+              <Route path="/contact" component={ContactPage} />
+              <Route path="/contacts" component={ContactsPage} />
+              <Route path="/home" component={HomePage} />
+              <Route path="/" component={AuthPage} />
+            </Switch>
+          </ApolloProvider>
+        </ShortcutContext.Provider>
       </AppContainer>
     </MemoryRouter>
   );
