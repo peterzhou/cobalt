@@ -49,7 +49,6 @@ export default class ShortcutManager {
       }
     });
     const bestCallback = this.activeShortcuts[sequence][className].callback;
-    console.log("BINDING", className);
     Mousetrap.bind(sequence, bestCallback);
   };
 
@@ -79,7 +78,6 @@ export default class ShortcutManager {
       const bestCallback = this.activeShortcuts[sequence][
         classNameWithBestCallback
       ].callback;
-      console.log("BINDING", classNameWithBestCallback);
       Mousetrap.bind(sequence, bestCallback);
     } else {
       Mousetrap.unbind(sequence);

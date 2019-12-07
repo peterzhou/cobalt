@@ -1,13 +1,11 @@
-import * as React from "react";
 import * as queryString from "query-string";
-
+import * as React from "react";
 import { Query, QueryResult } from "react-apollo";
-
-import { CURRENT_USER_WITH_CONTACT } from "../graphql/queries";
+import { RouteComponentProps } from "react-router";
+import DashboardShell from "../components/DashboardShell";
 import Contact from "../contacts/Contact";
 import { CurrentUserWithContact } from "../graphql/generated/types";
-import DashboardShell from "../components/DashboardShell";
-import { RouteComponentProps } from "react-router";
+import { CURRENT_USER_WITH_CONTACT } from "../graphql/queries";
 import { TAB } from "../types";
 
 class ContactPage extends React.Component<RouteComponentProps<any>, void> {

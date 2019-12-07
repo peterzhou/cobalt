@@ -38,7 +38,7 @@ class AuthPage extends React.Component<Props, State> {
 
   render() {
     if (this.state.authToken) {
-      return <Redirect to="/settings" />;
+      return <Redirect to="/contacts" />;
     }
     return (
       <Container>

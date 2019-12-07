@@ -29,7 +29,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 40px;
-  width: 300px;
+  width: 200px;
   height: calc(100% - 80px);
   border-left: 1px solid rgb(45, 47, 49);
 `;

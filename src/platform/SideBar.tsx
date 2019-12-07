@@ -89,12 +89,6 @@ class SideBar extends React.Component<Props, State> {
             Automation
           </Tab>
         </Link>
-        <button
-          onClick={() => {
-            console.log(this.props.manager.activeShortcuts);
-          }}>
-          See Manager
-        </button>
       </Container>
     );
   }
@@ -106,7 +100,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: calc(100% - 60px);
-  min-width: 300px;
+  min-width: 200px;
   background-color: rgb(30, 31, 35);
   border-right: 1px solid rgb(42, 44, 46);
   padding-top: 60px;

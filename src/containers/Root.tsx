@@ -35,8 +35,8 @@ export default function Root() {
           <ApolloProvider client={client}>
             <Switch>
               <Route path="/settings" component={SettingsPage} />
-              <Route path="/contact" component={ContactPage} />
               <Route path="/contacts" component={ContactsPage} />
+              <Route path="/contact" component={ContactPage} />
               <Route path="/home" component={HomePage} />
               <Route path="/" component={AuthPage} />
             </Switch>

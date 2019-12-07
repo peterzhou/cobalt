@@ -18,3 +18,9 @@ export const ADD_GOOGLE_AUTH = gql`
     addGoogleAuth
   }
 `;
+
+export const SEND_EMAIL = gql`
+  mutation SendEmail($input: SendEmailInput!) {
+    sendEmail(input: $input)
+  }
+`;
