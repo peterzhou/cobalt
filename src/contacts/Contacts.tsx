@@ -29,7 +29,7 @@ class Contacts extends React.Component<Props, State> {
     focusedFilter: 0,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     console.log("Contacts mounting");
     this.props.manager.bind(
       "j",

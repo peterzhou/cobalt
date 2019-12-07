@@ -27,6 +27,9 @@ type State = {
 };
 
 class AddContactModal extends React.Component<Props, State> {
+  submitFunction: any = null;
+  commandSubmitFunction: any = null;
+
   emailRef = React.createRef<HTMLInputElement>();
 
   state: State = {
@@ -37,13 +40,25 @@ class AddContactModal extends React.Component<Props, State> {
     anotherContact: false,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     // Prevent tab switching when at modal
     this.props.manager.bind(
       "tab",
       (ev: any) => {
         ev.stopPropagation();
       },
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "enter",
+      this.submitFunction,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "command+enter",
+      this.commandSubmitFunction,
       this.constructor.name,
       1,
     );
@@ -196,22 +211,21 @@ class AddContactModal extends React.Component<Props, State> {
                     /*
                      * TODO Need to unbind this or it will persist forever because render is called many times
                      */
-                    this.props.manager.bind(
+                    this.props.manager.updateCallback(
                       "enter",
                       () => {
                         submitContact(true);
                       },
                       this.constructor.name,
-                      1,
                     );
-                    this.props.manager.bind(
+                    this.props.manager.updateCallback(
                       "command+enter",
                       () => {
-                        submitContact(false);
+                        submitContact(true);
                       },
                       this.constructor.name,
-                      1,
                     );
+
                     return (
                       <ButtonRow>
                         <CreateButton

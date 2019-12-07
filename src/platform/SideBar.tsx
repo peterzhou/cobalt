@@ -14,7 +14,7 @@ type Props = {
 type State = {};
 
 class SideBar extends React.Component<Props, State> {
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.manager.bind(
       "g h",
       () => {
@@ -89,6 +89,12 @@ class SideBar extends React.Component<Props, State> {
             Automation
           </Tab>
         </Link>
+        <button
+          onClick={() => {
+            console.log(this.props.manager.activeShortcuts);
+          }}>
+          See Manager
+        </button>
       </Container>
     );
   }

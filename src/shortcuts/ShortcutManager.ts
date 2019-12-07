@@ -34,17 +34,59 @@ export default class ShortcutManager {
       };
     } else {
       this.activeShortcuts[sequence][className].count += 1;
+      this.activeShortcuts[sequence][className].callback = callback;
     }
-    Mousetrap.bind(sequence, callback);
+
+    let maxPriority = 0;
+    let classNameWithBestCallback = className;
+    Object.keys(this.activeShortcuts[sequence]).forEach((className) => {
+      if (
+        this.activeShortcuts[sequence][className].count > 0 &&
+        this.activeShortcuts[sequence][className].priority >= maxPriority
+      ) {
+        classNameWithBestCallback = className;
+        maxPriority = this.activeShortcuts[sequence][className].priority;
+      }
+    });
+    const bestCallback = this.activeShortcuts[sequence][className].callback;
+    console.log("BINDING", className);
+    Mousetrap.bind(sequence, bestCallback);
   };
 
   unbind = (sequence: string, className: string) => {
-    // if (
-    //   !this.activeShortcuts[sequence] ||
-    //   !this.activeShortcuts[sequence][className]
-    // ) {
-    //   return;
-    // }
-    Mousetrap.unbind(sequence);
+    if (
+      !this.activeShortcuts[sequence] ||
+      !this.activeShortcuts[sequence][className]
+    ) {
+      return;
+    }
+
+    this.activeShortcuts[sequence][className].count -= 1;
+
+    let maxPriority = 0;
+    let classNameWithBestCallback = className;
+    Object.keys(this.activeShortcuts[sequence]).forEach((className) => {
+      if (
+        this.activeShortcuts[sequence][className].count > 0 &&
+        this.activeShortcuts[sequence][className].priority >= maxPriority
+      ) {
+        classNameWithBestCallback = className;
+        maxPriority = this.activeShortcuts[sequence][className].priority;
+      }
+    });
+
+    if (maxPriority) {
+      const bestCallback = this.activeShortcuts[sequence][
+        classNameWithBestCallback
+      ].callback;
+      console.log("BINDING", classNameWithBestCallback);
+      Mousetrap.bind(sequence, bestCallback);
+    } else {
+      Mousetrap.unbind(sequence);
+    }
+  };
+
+  updateCallback = (sequence: string, callback: any, className: string) => {
+    this.activeShortcuts[sequence][className].callback = callback;
   };
 }

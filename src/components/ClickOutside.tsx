@@ -16,7 +16,7 @@ class ClickOutside extends React.Component<Props> {
     this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
     this.props.manager.bind(
       "esc",

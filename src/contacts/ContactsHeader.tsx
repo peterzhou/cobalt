@@ -21,7 +21,7 @@ class ContactsHeader extends React.Component<Props, State> {
     showNewContactModal: false,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.manager.bind(
       "n",
       (event: any) => {

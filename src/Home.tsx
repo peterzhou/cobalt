@@ -14,7 +14,7 @@ class Home extends React.Component<Props, State> {
     isCommandLineOpen: false,
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.manager.bind(
       "command+k",
       () => {

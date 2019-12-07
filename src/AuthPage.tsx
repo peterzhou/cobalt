@@ -17,7 +17,7 @@ class AuthPage extends React.Component<Props, State> {
     authToken: "",
   };
 
-  async componentDidMount() {
+  async UNSAFE_componentWillMount() {
     const authToken = localStorage.getItem("authToken");
     this.setState({
       authToken: authToken || "",
