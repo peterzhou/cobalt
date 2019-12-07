@@ -21,15 +21,20 @@ class ContactsHeader extends React.Component<Props, State> {
     showNewContactModal: false,
   };
 
-  componentDidMount() {
-    this.props.manager.bind("n", (event: any) => {
-      this.showNewContactModal();
-      event.preventDefault();
-    });
+  componentWillMount() {
+    this.props.manager.bind(
+      "n",
+      (event: any) => {
+        this.showNewContactModal();
+        event.preventDefault();
+      },
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("n");
+    this.props.manager.unbind("n", this.constructor.name);
   }
 
   showNewContactModal = () => {

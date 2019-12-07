@@ -16,14 +16,19 @@ class ClickOutside extends React.Component<Props> {
     this.handleClickOutside = this.handleClickOutside.bind(this);
   }
 
-  componentDidMount() {
+  componentWillMount() {
     document.addEventListener("mousedown", this.handleClickOutside);
-    this.props.manager.bind("esc", this.handleClickOutside);
+    this.props.manager.bind(
+      "esc",
+      this.handleClickOutside,
+      this.constructor.name,
+      10,
+    );
   }
 
   componentWillUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
-    this.props.manager.unbind("esc");
+    this.props.manager.unbind("esc", this.constructor.name);
   }
 
   setWrapperRef(node: any) {

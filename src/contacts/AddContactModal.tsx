@@ -37,16 +37,21 @@ class AddContactModal extends React.Component<Props, State> {
     anotherContact: false,
   };
 
-  componentDidMount() {
+  componentWillMount() {
     // Prevent tab switching when at modal
-    this.props.manager.bind("tab", (ev: any) => {
-      ev.stopPropagation();
-    });
+    this.props.manager.bind(
+      "tab",
+      (ev: any) => {
+        ev.stopPropagation();
+      },
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("command+enter");
-    this.props.manager.unbind("enter");
+    this.props.manager.unbind("command+enter", this.constructor.name);
+    this.props.manager.unbind("enter", this.constructor.name);
   }
 
   captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -188,12 +193,25 @@ class AddContactModal extends React.Component<Props, State> {
                       );
                     };
 
-                    this.props.manager.bind("enter", () => {
-                      submitContact(true);
-                    });
-                    this.props.manager.bind("command+enter", () => {
-                      submitContact(false);
-                    });
+                    /*
+                     * TODO Need to unbind this or it will persist forever because render is called many times
+                     */
+                    this.props.manager.bind(
+                      "enter",
+                      () => {
+                        submitContact(true);
+                      },
+                      this.constructor.name,
+                      1,
+                    );
+                    this.props.manager.bind(
+                      "command+enter",
+                      () => {
+                        submitContact(false);
+                      },
+                      this.constructor.name,
+                      1,
+                    );
                     return (
                       <ButtonRow>
                         <CreateButton

@@ -23,8 +23,8 @@ export default ContactActivityLog;
 const Container = styled.div`
   display: flex;
   flex-direction: 100%;
-  width: calc(100% - 200px);
-  height: 100%;
+  height: calc(100% - 80px);
+  width: calc(100% - 380px);
   color: rgb(255, 255, 255);
   padding: 40px;
 `;

@@ -1,3 +1,5 @@
+import ShortcutManager from "./shortcuts/ShortcutManager";
+
 export enum TAB {
   HOME = "HOME",
   CONTACTS = "CONTACTS",
@@ -6,7 +8,7 @@ export enum TAB {
 }
 
 export type ShortcutProps = {
-  manager: any;
+  manager: ShortcutManager;
 };
 
 export type User = {

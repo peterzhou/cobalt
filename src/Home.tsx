@@ -14,23 +14,32 @@ class Home extends React.Component<Props, State> {
     isCommandLineOpen: false,
   };
 
-  componentDidMount() {
-    this.props.manager.bind("command+k", () => {
-      this.setState({
-        isCommandLineOpen: true,
-      });
-    });
-    this.props.manager.bind("esc", () => {
-      console.log("WHAT THE FUCK");
-      this.setState({
-        isCommandLineOpen: false,
-      });
-    });
+  componentWillMount() {
+    this.props.manager.bind(
+      "command+k",
+      () => {
+        this.setState({
+          isCommandLineOpen: true,
+        });
+      },
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "esc",
+      () => {
+        this.setState({
+          isCommandLineOpen: false,
+        });
+      },
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("command+k");
-    this.props.manager.unbind("esc");
+    this.props.manager.unbind("command+k", this.constructor.name);
+    this.props.manager.unbind("esc", this.constructor.name);
   }
 
   hideCommandLine = () => {
