@@ -29,20 +29,41 @@ class Contacts extends React.Component<Props, State> {
     focusedFilter: 0,
   };
 
-  componentDidMount() {
-    this.props.manager.bind("j", this.focusNextElement);
-    this.props.manager.bind("k", this.focusPreviousElement);
-    this.props.manager.bind("tab", this.nextFilter);
-    this.props.manager.bind("shift+tab", this.previousFilter);
-    this.props.manager.bind("enter", this.redirectToContact);
+  UNSAFE_componentWillMount() {
+    console.log("Contacts mounting");
+    this.props.manager.bind(
+      "j",
+      this.focusNextElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "k",
+      this.focusPreviousElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind("tab", this.nextFilter, this.constructor.name, 1);
+    this.props.manager.bind(
+      "shift+tab",
+      this.previousFilter,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "enter",
+      this.redirectToContact,
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("j");
-    this.props.manager.unbind("k");
-    this.props.manager.unbind("tab");
-    this.props.manager.unbind("shift+tab");
-    this.props.manager.unbind("enter");
+    this.props.manager.unbind("j", this.constructor.name);
+    this.props.manager.unbind("k", this.constructor.name);
+    this.props.manager.unbind("tab", this.constructor.name);
+    this.props.manager.unbind("shift+tab", this.constructor.name);
+    this.props.manager.unbind("enter", this.constructor.name);
   }
 
   redirectToContact = () => {

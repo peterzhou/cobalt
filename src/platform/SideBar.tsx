@@ -14,29 +14,49 @@ type Props = {
 type State = {};
 
 class SideBar extends React.Component<Props, State> {
-  componentDidMount() {
-    this.props.manager.bind("g h", () => {
-      this.props.history.push("/home");
-    });
+  UNSAFE_componentWillMount() {
+    this.props.manager.bind(
+      "g h",
+      () => {
+        this.props.history.push("/home");
+      },
+      this.constructor.name,
+      1,
+    );
 
-    this.props.manager.bind("g s", () => {
-      this.props.history.push("/settings");
-    });
+    this.props.manager.bind(
+      "g s",
+      () => {
+        this.props.history.push("/settings");
+      },
+      this.constructor.name,
+      1,
+    );
 
-    this.props.manager.bind("g c", () => {
-      this.props.history.push("/contacts");
-    });
+    this.props.manager.bind(
+      "g c",
+      () => {
+        this.props.history.push("/contacts");
+      },
+      this.constructor.name,
+      1,
+    );
 
-    this.props.manager.bind("g a", () => {
-      this.props.history.push("/automation");
-    });
+    this.props.manager.bind(
+      "g a",
+      () => {
+        this.props.history.push("/automation");
+      },
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("g h");
-    this.props.manager.unbind("g s");
-    this.props.manager.unbind("g c");
-    this.props.manager.unbind("g a");
+    this.props.manager.unbind("g h", this.constructor.name);
+    this.props.manager.unbind("g s", this.constructor.name);
+    this.props.manager.unbind("g c", this.constructor.name);
+    this.props.manager.unbind("g a", this.constructor.name);
   }
 
   render() {
@@ -69,6 +89,12 @@ class SideBar extends React.Component<Props, State> {
             Automation
           </Tab>
         </Link>
+        <button
+          onClick={() => {
+            console.log(this.props.manager.activeShortcuts);
+          }}>
+          See Manager
+        </button>
       </Container>
     );
   }

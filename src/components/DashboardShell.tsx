@@ -19,18 +19,33 @@ class DashboardShell extends React.Component<Props, State> {
     isCommandLineOpen: false,
   };
 
-  componentDidMount() {
-    this.props.manager.bind("command+k", () => {
-      console.log("YA");
-      this.setState({
-        isCommandLineOpen: true,
-      });
-    });
-    this.props.manager.bind("esc", () => {
-      this.setState({
-        isCommandLineOpen: false,
-      });
-    });
+  UNSAFE_componentWillMount() {
+    this.props.manager.bind(
+      "command+k",
+      () => {
+        console.log("YA");
+        this.setState({
+          isCommandLineOpen: true,
+        });
+      },
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "esc",
+      () => {
+        this.setState({
+          isCommandLineOpen: false,
+        });
+      },
+      this.constructor.name,
+      1,
+    );
+  }
+
+  componentWillUnmount() {
+    this.props.manager.unbind("command+k", this.constructor.name);
+    this.props.manager.unbind("esc", this.constructor.name);
   }
 
   hideCommandLine = () => {
@@ -40,8 +55,6 @@ class DashboardShell extends React.Component<Props, State> {
   };
 
   render() {
-    console.log(this.props.manager);
-    console.log(this.props.manager.activeShortcuts);
     return (
       <>
         <Container>

@@ -16,16 +16,15 @@ type State = {};
 
 class Contact extends React.Component<Props, State> {
   // TODO: Bug with Mousetrap not firing
-  componentDidMount() {
-    this.props.manager.bind("esc", this.redirectBack);
+  UNSAFE_componentWillMount() {
+    this.props.manager.bind("esc", this.redirectBack, this.constructor.name, 2);
   }
 
   componentWillUnmount() {
-    this.props.manager.unbind("esc");
+    this.props.manager.unbind("esc", this.constructor.name);
   }
 
   redirectBack = () => {
-    console.log("IM TRYING");
     this.props.history.goBack();
   };
 

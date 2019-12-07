@@ -1,9 +1,8 @@
-import * as React from "react";
-
-import Login from "./LogIn";
-import { Redirect } from "react-router-dom";
-import SignUp from "./SignUp";
 import styled from "@emotion/styled";
+import * as React from "react";
+import { Redirect } from "react-router-dom";
+import Login from "./LogIn";
+import SignUp from "./SignUp";
 
 type Props = {};
 
@@ -18,7 +17,7 @@ class AuthPage extends React.Component<Props, State> {
     authToken: "",
   };
 
-  async componentDidMount() {
+  async UNSAFE_componentWillMount() {
     const authToken = localStorage.getItem("authToken");
     this.setState({
       authToken: authToken || "",
