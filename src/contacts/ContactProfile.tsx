@@ -17,12 +17,19 @@ class ContactProfile extends React.Component<Props, State> {
           {this.props.contact.firstName} {this.props.contact.lastName}
         </Name>
         <CompanyName>Lang</CompanyName>
+        <Email>{this.props.contact.email}</Email>
       </Container>
     );
   }
 }
 
 export default ContactProfile;
+
+const Email = styled.div`
+  color: rgb(255, 255, 255);
+  font-size: 16px;
+  margin-top: 20px;
+`;
 
 const Container = styled.div`
   display: flex;

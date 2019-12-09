@@ -1,11 +1,13 @@
 import styled from "@emotion/styled";
 import * as React from "react";
-import { MutationFunction, MutationResult } from "react-apollo";
+import { Mutation, MutationFunction, MutationResult } from "react-apollo";
+import Input from "../components/Input";
 import { CurrentUserWithContact_currentUser_contact } from "../graphql/generated/types";
-import { SEND_EMAIL } from "../graphql/mutations";
+import { SEND_DRAFT } from "../graphql/mutations";
 import { CURRENT_USER_WITH_CONTACT } from "../graphql/queries";
 import withShortcuts from "../shortcuts/withShortcuts";
-import { ShortcutProps } from "../types";
+import { SEND_DRAFT_ERROR, ShortcutProps } from "../types";
+import { validateEmail } from "../utils";
 
 type Props = {
   contact: CurrentUserWithContact_currentUser_contact;
@@ -18,15 +20,17 @@ type State = {
   bccEmails: string[];
   subject: string;
   body: string;
+  error: SEND_DRAFT_ERROR | null;
 };
 
 class Draft extends React.Component<Props, State> {
   state: State = {
-    toEmails: [],
+    toEmails: [this.props.contact.email],
     ccEmails: [],
     bccEmails: [],
     subject: "",
     body: "",
+    error: null,
   };
 
   UNSAFE_componentWillMount() {
@@ -38,7 +42,7 @@ class Draft extends React.Component<Props, State> {
     );
     this.props.manager.bind(
       "command+enter",
-      this.sendDraft,
+      () => {},
       this.constructor.name,
       1,
     );
@@ -49,96 +53,121 @@ class Draft extends React.Component<Props, State> {
     this.props.manager.unbind("command+enter", this.constructor.name);
   }
 
-  captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // TODO: Make generalizable
-    if (event.key === "Escape") {
-      this.props.hideDraft();
+  validateFields = () => {
+    if (
+      this.state.toEmails[0] === "" ||
+      !validateEmail(this.state.toEmails[0])
+    ) {
+      this.setState({
+        error: SEND_DRAFT_ERROR.EMAIL,
+      });
+      return false;
     }
+
+    return true;
   };
 
-  sendDraft = () => {};
+  onSentDraft = (data: any) => {
+    this.props.hideDraft();
+  };
+
+  onToEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      toEmails: [event.target.value],
+    });
+  };
+
+  onSubjectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      subject: event.target.value,
+    });
+  };
+
+  onBodyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      body: event.target.value,
+    });
+  };
 
   render() {
     return (
       <Container>
-        <ToHolder>
-          <ToTitle>To</ToTitle>
-          <Input autoFocus onKeyDown={this.captureInputKeys} />
-        </ToHolder>
-        <Break />
-        <Input onKeyDown={this.captureInputKeys} placeholder="Subject" />
-        <Break />
-        <Input onKeyDown={this.captureInputKeys} placeholder="Say hello" />
-        <Break />
-        <Border />
         <Mutation
-          mutation={SEND_EMAIL}
-          onCompleted={this.onCreateContact}
-          refetchQueries={[{ query: CURRENT_USER_WITH_CONTACT }]}>
-          {(
-            createContact: MutationFunction,
-            { data, loading }: MutationResult,
-          ) => {
+          mutation={SEND_DRAFT}
+          onCompleted={this.onSentDraft}
+          refetchQueries={[
+            {
+              query: CURRENT_USER_WITH_CONTACT,
+              variables: { id: this.props.contact.id },
+            },
+          ]}>
+          {(sendDraft: MutationFunction, { data, loading }: MutationResult) => {
             const submit = () => {
               if (!this.validateFields()) {
                 return;
               }
 
-              createContact({
+              sendDraft({
                 variables: {
                   input: {
-                    email: this.state.email,
-                    firstName: this.state.firstName,
-                    lastName: this.state.lastName,
-                  },
-                },
-                optimisticResponse: {
-                  createContact: {
-                    assignee: {
-                      id: this.props.user.id,
-                      __typename: "User",
-                    },
-                    firstName: this.state.firstName,
-                    lastName: this.state.lastName,
-                    __typename: "Contact",
+                    toEmails: this.state.toEmails,
+                    ccEmails: this.state.ccEmails,
+                    bccEmails: this.state.bccEmails,
+                    subject: this.state.subject,
+                    body: this.state.body,
                   },
                 },
               });
             };
 
-            const submitContact = (another: boolean) => {
-              this.setState(
-                {
-                  anotherContact: another,
-                },
-                () => {
-                  submit();
-                },
-              );
-            };
-
-            /*
-             * TODO Need to unbind this or it will persist forever because render is called many times
-             */
-            this.props.manager.updateCallback(
-              "enter",
-              () => {
-                submitContact(true);
-              },
-              this.constructor.name,
-            );
             this.props.manager.updateCallback(
               "command+enter",
-              () => {
-                submitContact(true);
-              },
+              submit,
               this.constructor.name,
             );
 
+            const shortcuts = [
+              {
+                keys: ["Meta", "Enter"],
+                callback: submit,
+              },
+              {
+                keys: ["Escape"],
+                callback: this.props.hideDraft,
+              },
+            ];
+
             return (
-              <CommandHolder>
-                <Send onClick={this.sendDraft}>Send</Send>
-              </CommandHolder>
+              <>
+                <ToHolder>
+                  <ToTitle>To</ToTitle>
+                  <Input
+                    autoFocus
+                    value={this.state.toEmails[0]}
+                    onChange={this.onToEmailChange}
+                    shortcuts={shortcuts}
+                  />
+                </ToHolder>
+                <Break />
+                <Input
+                  value={this.state.subject}
+                  onChange={this.onSubjectChange}
+                  placeholder="Subject"
+                  shortcuts={shortcuts}
+                />
+                <Break />
+                <Input
+                  value={this.state.body}
+                  onChange={this.onBodyChange}
+                  placeholder="Say hello"
+                  shortcuts={shortcuts}
+                />
+                <Break />
+                <Border />
+                <CommandHolder>
+                  <Send onClick={submit}>Send</Send>
+                </CommandHolder>
+              </>
             );
           }}
         </Mutation>
@@ -161,12 +190,17 @@ const Container = styled.div`
 
 const Send = styled.button`
   border: 0px;
+  padding: 0px;
+  background: none;
+  font-size: 14px;
+  color: rgb(211, 212, 215);
+  font-weight: bold;
 `;
 
 const CommandHolder = styled.div`
+  margin-top: 20px;
   display: flex;
-  width: calc(100% - 40px);
-  padding: 20px;
+  width: 100%;
 `;
 
 const Break = styled.div`
@@ -187,19 +221,4 @@ const ToHolder = styled.div`
 const ToTitle = styled.div`
   display: flex;
   margin-right: 20px;
-`;
-
-const Input = styled.input`
-  font-size: 16px;
-  -webkit-appearance: none;
-  border: none;
-  background-image: none;
-  background-color: rgb(45, 47, 49);
-  :focus {
-    outline: none;
-  }
-  ::placeholder {
-    color: #a0a0a0;
-  }
-  color: rgb(244, 244, 246);
 `;

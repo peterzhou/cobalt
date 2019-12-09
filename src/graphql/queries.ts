@@ -21,6 +21,7 @@ export const CURRENT_USER_WITH_CONTACT = gql`
       email
       contact(id: $id) {
         id
+        email
         firstName
         lastName
       }
