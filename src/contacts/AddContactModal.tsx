@@ -70,7 +70,7 @@ class AddContactModal extends React.Component<Props, State> {
   }
 
   captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    //
+    // TODO: Make generalizable
     if (event.key === "Escape") {
       this.props.onHideModal();
     }

@@ -41,3 +41,7 @@ export type Filter = {
 export enum CREATE_CONTACT_ERROR {
   EMAIL = "EMAIL",
 }
+
+export enum SEND_DRAFT_ERROR {
+  EMAIL = "EMAIL",
+}
