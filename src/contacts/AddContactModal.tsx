@@ -4,8 +4,9 @@ import { Mutation, MutationFunction, MutationResult } from "react-apollo";
 import ClickOutside from "../components/ClickOutside";
 import Command from "../components/icons/Keys/Command";
 import Enter from "../components/icons/Keys/Enter";
+import Input from "../components/Input";
 import Shortcut from "../components/Shortcut";
-import { Button, Input } from "../components/StyledComponents";
+import { Button } from "../components/StyledComponents";
 import { CurrentUser_currentUser } from "../graphql/generated/types";
 import { CREATE_CONTACT } from "../graphql/mutations";
 import { CURRENT_USER } from "../graphql/queries";
@@ -30,7 +31,7 @@ class AddContactModal extends React.Component<Props, State> {
   submitFunction: any = null;
   commandSubmitFunction: any = null;
 
-  emailRef = React.createRef<HTMLInputElement>();
+  emailRef = React.createRef<any>();
 
   state: State = {
     email: "",
@@ -68,13 +69,6 @@ class AddContactModal extends React.Component<Props, State> {
     this.props.manager.unbind("command+enter", this.constructor.name);
     this.props.manager.unbind("enter", this.constructor.name);
   }
-
-  captureInputKeys = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // TODO: Make generalizable
-    if (event.key === "Escape") {
-      this.props.onHideModal();
-    }
-  };
 
   onChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event) {
@@ -136,97 +130,145 @@ class AddContactModal extends React.Component<Props, State> {
             onClick={(ev) => {
               ev.stopPropagation();
             }}>
-            <Modal>
-              <Header>New Contact</Header>
-              <Body>
-                <Label>EMAIL</Label>
-                <Input
-                  ref={this.emailRef}
-                  placeholder="Email"
-                  value={this.state.email}
-                  onChange={this.onChangeEmail}
-                  autoFocus
-                  onKeyDown={this.captureInputKeys}
-                />
-                <Label>FIRST NAME</Label>
-                <Input
-                  placeholder="First Name"
-                  value={this.state.firstName}
-                  onChange={this.onChangeFirstName}
-                  onKeyDown={this.captureInputKeys}
-                />
-                <Label>LAST NAME</Label>
-                <Input
-                  placeholder="Last Name"
-                  value={this.state.lastName}
-                  onChange={this.onChangeLastName}
-                  onKeyDown={this.captureInputKeys}
-                />
-                <Mutation
-                  mutation={CREATE_CONTACT}
-                  onCompleted={this.onCreateContact}
-                  refetchQueries={[{ query: CURRENT_USER }]}>
-                  {(
-                    createContact: MutationFunction,
-                    { data, loading }: MutationResult,
-                  ) => {
-                    const submit = () => {
-                      if (!this.validateFields()) {
-                        return;
-                      }
+            <Mutation
+              mutation={CREATE_CONTACT}
+              onCompleted={this.onCreateContact}
+              refetchQueries={[{ query: CURRENT_USER }]}>
+              {(
+                createContact: MutationFunction,
+                { data, loading }: MutationResult,
+              ) => {
+                const submit = () => {
+                  if (!this.validateFields()) {
+                    return;
+                  }
 
-                      createContact({
-                        variables: {
-                          input: {
-                            email: this.state.email,
-                            firstName: this.state.firstName,
-                            lastName: this.state.lastName,
-                          },
+                  createContact({
+                    variables: {
+                      input: {
+                        email: this.state.email,
+                        firstName: this.state.firstName,
+                        lastName: this.state.lastName,
+                      },
+                    },
+                    optimisticResponse: {
+                      createContact: {
+                        assignee: {
+                          id: this.props.user.id,
+                          __typename: "User",
                         },
-                        optimisticResponse: {
-                          createContact: {
-                            assignee: {
-                              id: this.props.user.id,
-                              __typename: "User",
+                        firstName: this.state.firstName,
+                        lastName: this.state.lastName,
+                        __typename: "Contact",
+                      },
+                    },
+                  });
+                };
+
+                const submitContact = (another: boolean) => {
+                  this.setState(
+                    {
+                      anotherContact: another,
+                    },
+                    () => {
+                      submit();
+                    },
+                  );
+                };
+
+                this.props.manager.updateCallback(
+                  "enter",
+                  () => {
+                    submitContact(true);
+                  },
+                  this.constructor.name,
+                );
+                this.props.manager.updateCallback(
+                  "command+enter",
+                  () => {
+                    submitContact(true);
+                  },
+                  this.constructor.name,
+                );
+
+                return (
+                  <Modal>
+                    <Header>New Contact</Header>
+                    <Body>
+                      <Label>EMAIL</Label>
+                      <StyledInput
+                        ref={this.emailRef}
+                        placeholder="Email"
+                        value={this.state.email}
+                        onChange={this.onChangeEmail}
+                        shortcuts={[
+                          {
+                            keys: ["Meta", "Enter"],
+                            callback: () => {
+                              submitContact(true);
                             },
-                            firstName: this.state.firstName,
-                            lastName: this.state.lastName,
-                            __typename: "Contact",
                           },
-                        },
-                      });
-                    };
-
-                    const submitContact = (another: boolean) => {
-                      this.setState(
-                        {
-                          anotherContact: another,
-                        },
-                        () => {
-                          submit();
-                        },
-                      );
-                    };
-
-                    /*
-                     * TODO Need to unbind this or it will persist forever because render is called many times
-                     */
-                    this.props.manager.updateCallback(
-                      "enter",
-                      () => {
-                        submitContact(true);
-                      },
-                      this.constructor.name,
-                    );
-                    this.props.manager.updateCallback(
-                      "command+enter",
-                      () => {
-                        submitContact(true);
-                      },
-                      this.constructor.name,
-                    );
-
-                    return (
+                          {
+                            keys: ["Enter"],
+                            callback: () => {
+                              submitContact(false);
+                            },
+                          },
+                          {
+                            keys: ["Escape"],
+                            callback: this.props.onHideModal,
+                          },
+                        ]}
+                        autoFocus
+                      />
+                      <Label>FIRST NAME</Label>
+                      <StyledInput
+                        placeholder="First Name"
+                        value={this.state.firstName}
+                        onChange={this.onChangeFirstName}
+                        shortcuts={[
+                          {
+                            keys: ["Meta", "Enter"],
+                            callback: () => {
+                              submitContact(true);
+                            },
+                          },
+                          {
+                            keys: ["Enter"],
+                            callback: () => {
+                              submitContact(false);
+                            },
+                          },
+                          {
+                            keys: ["Escape"],
+                            callback: this.props.onHideModal,
+                          },
+                        ]}
+                      />
+                      <Label>LAST NAME</Label>
+                      <StyledInput
+                        placeholder="Last Name"
+                        value={this.state.lastName}
+                        onChange={this.onChangeLastName}
+                        shortcuts={[
+                          {
+                            keys: ["Meta", "Enter"],
+                            callback: () => {
+                              submitContact(true);
+                            },
+                          },
+                          {
+                            keys: ["Enter"],
+                            callback: () => {
+                              submitContact(false);
+                            },
+                          },
+                          {
+                            keys: ["Escape"],
+                            callback: this.props.onHideModal,
+                          },
+                        ]}
+                      />
                       <ButtonRow>
                         <CreateButton
                           onClick={() => {
@@ -249,11 +291,11 @@ class AddContactModal extends React.Component<Props, State> {
                           </StyledShortcut>
                         </CreateButton>
                       </ButtonRow>
-                    );
-                  }}
-                </Mutation>
-              </Body>
-            </Modal>
+                    </Body>
+                  </Modal>
+                );
+              }}
+            </Mutation>
           </Container>
         </Background>
       </ClickOutside>
@@ -339,4 +381,22 @@ const Modal = styled.div`
   height: 60px;
   border-radius: 4px;
   display: flex;
+`;
+
+const StyledInput = styled(Input)`
+  -webkit-appearance: none;
+  border: none;
+  background-image: none;
+  background-color: rgb(45, 47, 49);
+  padding: 10px 12px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+  font-size: 14px;
+  :focus {
+    outline: none;
+  }
+  ::placeholder {
+    color: #a0a0a0;
+  }
+  color: rgb(244, 244, 246);
 `;

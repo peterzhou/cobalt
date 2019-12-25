@@ -7,6 +7,7 @@ import AuthPage from "../AuthPage";
 import ShortcutContext from "../shortcuts/shortcutContext";
 import ShortcutManager from "../shortcuts/ShortcutManager";
 import { getBackendUrl } from "../utils";
+import AutomationPage from "./AutomationPage";
 import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
@@ -34,6 +35,7 @@ export default function Root() {
         <ShortcutContext.Provider value={{ manager: shortcutManager }}>
           <ApolloProvider client={client}>
             <Switch>
+              <Route path="/automation" component={AutomationPage} />
               <Route path="/settings" component={SettingsPage} />
               <Route path="/contacts" component={ContactsPage} />
               <Route path="/contact" component={ContactPage} />

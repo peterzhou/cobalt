@@ -32,17 +32,28 @@ module.exports = merge(baseConfig, {
     //   }
     // ],
     loaders: [
-      {
-        test: /\.global\.css$/,
-        loaders: ["style-loader", "css-loader?sourceMap"],
-      },
+      // {
+      //   test: /\.global\.css$/,
+      //   exclude: [/node_modules/],
+      //   loaders: ["css-loader?sourceMap"],
+      // },
 
       {
-        test: /^((?!\.global).)*\.css$/,
-        loaders: [
-          "style-loader",
-          "css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]",
-        ],
+        test: /\.(css)$/,
+        include: [/node_modules/],
+        use: ["style-loader", "css-loader"],
+      },
+      // {
+      //   test: /^((?!\.global).)*\.css$/,
+      //   exclude: [/node_modules/],
+      //   loaders: [
+      //     "css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]",
+      //   ],
+      // },
+      {
+        test: /\.(css)$/,
+        exclude: [/node_modules/],
+        use: ["style-loader", "css-loader"],
       },
 
       // Add SASS support  - compile all .global.scss files and pipe it to style.css

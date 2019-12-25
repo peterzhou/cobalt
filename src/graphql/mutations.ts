@@ -24,3 +24,13 @@ export const SEND_DRAFT = gql`
     sendDraft(input: $input)
   }
 `;
+
+export const CREATE_TEMPLATE = gql`
+  mutation CreateTemplate($input: CreateTemplateInput!) {
+    createTemplate(input: $input) {
+      id
+      name
+      content
+    }
+  }
+`;

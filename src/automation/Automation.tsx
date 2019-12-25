@@ -2,31 +2,36 @@ import styled from "@emotion/styled";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import Table from "../components/Table";
-import { CurrentUser_currentUser } from "../graphql/generated/types";
+import {
+  CurrentUserWithAutomation_currentUser,
+  CurrentUserWithAutomation_currentUser_sequences,
+  CurrentUserWithAutomation_currentUser_templates,
+} from "../graphql/generated/types";
 import withShortcuts from "../shortcuts/withShortcuts";
-import { Contact, ShortcutProps } from "../types";
-import ContactRow from "./ContactRow";
-import ContactsHeader from "./ContactsHeader";
+import { ShortcutProps } from "../types";
+import AutomationHeader from "./AutomationHeader";
+import SequenceRow from "./SequenceRow";
+import TemplateRow from "./TemplateRow";
 
 type Props = {
-  user: CurrentUser_currentUser;
+  user: CurrentUserWithAutomation_currentUser;
 } & RouteComponentProps &
   ShortcutProps;
 
 type State = {
   focusedIndex: number;
-  focusedFilter: number;
+  automationTag: AUTOMATION_TAG;
 };
 
-const FILTERS = [
-  { user: null, id: "1", name: "All Contacts", count: 126 },
-  { user: null, id: "2", name: "My Contacts", count: 34 },
-];
+export enum AUTOMATION_TAG {
+  SEQUENCE = "SEQUENCE",
+  TEMPLATE = "TEMPLATE",
+}
 
-class Contacts extends React.Component<Props, State> {
+class Automation extends React.Component<Props, State> {
   state: State = {
     focusedIndex: 0,
-    focusedFilter: 0,
+    automationTag: AUTOMATION_TAG.TEMPLATE,
   };
 
   UNSAFE_componentWillMount() {
@@ -42,10 +47,15 @@ class Contacts extends React.Component<Props, State> {
       this.constructor.name,
       1,
     );
-    this.props.manager.bind("tab", this.nextFilter, this.constructor.name, 1);
+    this.props.manager.bind(
+      "tab",
+      this.toggleAutomation,
+      this.constructor.name,
+      1,
+    );
     this.props.manager.bind(
       "shift+tab",
-      this.previousFilter,
+      this.toggleAutomation,
       this.constructor.name,
       1,
     );
@@ -66,12 +76,12 @@ class Contacts extends React.Component<Props, State> {
   }
 
   redirectToContact = () => {
-    const contactId = this.props.user.contacts[this.state.focusedIndex].id;
+    const contactId = this.props.user.sequences[this.state.focusedIndex].id;
     this.props.history.push(`/contact?id=${contactId}`);
   };
 
   focusNextElement = () => {
-    if (this.state.focusedIndex >= this.props.user.contacts.length - 1) {
+    if (this.state.focusedIndex >= this.props.user.sequences.length - 1) {
       return;
     }
     this.setState({
@@ -88,27 +98,38 @@ class Contacts extends React.Component<Props, State> {
     });
   };
 
-  nextFilter = (event: KeyboardEvent) => {
+  toggleAutomation = (event: KeyboardEvent) => {
     event.preventDefault();
     this.setState({
-      focusedFilter: (this.state.focusedFilter + 1) % FILTERS.length,
+      automationTag:
+        this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+          ? AUTOMATION_TAG.TEMPLATE
+          : AUTOMATION_TAG.SEQUENCE,
       focusedIndex: 0,
     });
   };
 
-  previousFilter = (event: KeyboardEvent) => {
-    event.preventDefault();
-    this.setState({
-      focusedFilter: (this.state.focusedFilter + 1) % FILTERS.length,
-      focusedIndex: 0,
-    });
-  };
-
-  getContactListing = (index: number, element: Contact) => {
+  getTemplateListing = (
+    index: number,
+    element: CurrentUserWithAutomation_currentUser_templates,
+  ) => {
     return (
-      <ContactRow
+      <TemplateRow
         key={index}
-        contact={element}
+        template={element}
+        focused={this.state.focusedIndex === index}
+      />
+    );
+  };
+
+  getSequenceListing = (
+    index: number,
+    element: CurrentUserWithAutomation_currentUser_sequences,
+  ) => {
+    return (
+      <SequenceRow
+        key={index}
+        sequence={element}
         focused={this.state.focusedIndex === index}
       />
     );
@@ -117,10 +138,9 @@ class Contacts extends React.Component<Props, State> {
   render() {
     return (
       <Container>
-        <ContactsHeader
+        <AutomationHeader
           user={this.props.user}
-          currentFilter={this.state.focusedFilter}
-          filters={FILTERS}
+          currentAutomationTag={this.state.automationTag}
         />
         <Table
           attributes={[]}
@@ -131,15 +151,23 @@ class Contacts extends React.Component<Props, State> {
           totalCount={100}
           elementName="Contacts"
           disableNext={false}
-          tableArray={this.props.user.contacts}
-          tableListing={this.getContactListing}
+          tableArray={
+            this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+              ? this.props.user.sequences
+              : this.props.user.templates
+          }
+          tableListing={
+            this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+              ? this.getSequenceListing
+              : this.getTemplateListing
+          }
         />
       </Container>
     );
   }
 }
 
-export default withRouter(withShortcuts(Contacts));
+export default withRouter(withShortcuts(Automation));
 
 const Container = styled.div`
   display: flex;
