@@ -14,8 +14,6 @@ type Props = {
   ShortcutProps;
 
 type State = {
-  selectedIndices: number[];
-  focusedIndex: number;
   focusedFilter: number;
 };
 
@@ -26,35 +24,29 @@ const FILTERS = [
 
 class Contacts extends React.Component<Props, State> {
   state: State = {
-    selectedIndices: [],
-    focusedIndex: 0,
     focusedFilter: 0,
   };
 
-  redirectToContact = () => {
-    const contactId = this.props.user.contacts[this.state.focusedIndex].id;
-    this.props.history.push(`/contact?id=${contactId}`);
+  redirectToContact = (id: string) => {
+    this.props.history.push(`/contact?id=${id}`);
   };
 
-  getContactListing = (index: number, element: Contact) => {
+  getContactListing = (
+    index: number,
+    element: Contact,
+    checked: boolean,
+    focused: boolean,
+    focusCurrentElement: () => any,
+    toggleCheckbox: () => any,
+  ) => {
     return (
       <ContactRow
         key={index}
         contact={element}
-        checked={
-          this.state.selectedIndices.find((currentIndex) => {
-            return currentIndex === index;
-          }) !== undefined
-        }
-        focused={this.state.focusedIndex === index}
-        focusCurrentElement={() => {
-          this.setState({
-            focusedIndex: index,
-          });
-        }}
-        toggleCheckbox={() => {
-          this.toggleSelectedIndex(index);
-        }}
+        checked={checked}
+        focused={focused}
+        focusCurrentElement={focusCurrentElement}
+        toggleCheckbox={toggleCheckbox}
       />
     );
   };
@@ -68,16 +60,16 @@ class Contacts extends React.Component<Props, State> {
           filters={FILTERS}
         />
         <Table
-          attributes={[]}
           onNextPage={() => {}}
           onPreviousPage={() => {}}
           currentPage={0}
           disablePrevious={false}
-          totalCount={100}
+          totalCount={this.props.user.contacts.length}
           elementName="Contacts"
           disableNext={false}
           tableArray={this.props.user.contacts}
           tableListing={this.getContactListing}
+          onClickTableListing={this.redirectToContact}
         />
       </Container>
     );

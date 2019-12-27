@@ -7,8 +7,15 @@ import LoadingScreen from "./LoadingScreen";
 type Props = {
   loading?: boolean;
   onClickHeader?: () => any;
-  tableListing: (index: number, element: any) => any;
-  onClickTableListing: () => any;
+  tableListing: (
+    index: number,
+    element: any,
+    checked: boolean,
+    focused: boolean,
+    focusCurrentElement: () => any,
+    toggleCheckbox: () => any,
+  ) => any;
+  onClickTableListing: (id: string) => any;
   tableArray: any[];
   currentPage: number;
   onNextPage: () => any;
@@ -18,14 +25,21 @@ type Props = {
   totalCount: number;
   elementName: string;
   notPaginated?: boolean;
+} & ShortcutProps;
+
+type State = {
   focusedIndex: number;
   selectedIndices: number[];
   focusedFilter: number;
-} & ShortcutProps;
-
-type State = {};
+};
 
 class DashboardTable extends React.Component<Props, State> {
+  state: State = {
+    focusedFilter: 0,
+    selectedIndices: [],
+    focusedIndex: 0,
+  };
+
   UNSAFE_componentWillMount() {
     this.props.manager.bind(
       "j",
@@ -84,58 +98,58 @@ class DashboardTable extends React.Component<Props, State> {
   }
 
   focusNextElement = () => {
-    if (this.props.focusedIndex >= this.props.totalCount - 1) {
+    if (this.state.focusedIndex >= this.props.totalCount - 1) {
       return;
     }
     this.setState({
-      focusedIndex: this.props.focusedIndex + 1,
+      focusedIndex: this.state.focusedIndex + 1,
     });
   };
 
   focusPreviousElement = () => {
-    if (this.props.focusedIndex === 0) {
+    if (this.state.focusedIndex === 0) {
       return;
     }
     this.setState({
-      focusedIndex: this.props.focusedIndex - 1,
+      focusedIndex: this.state.focusedIndex - 1,
     });
   };
 
   selectNextElement = () => {
-    let newSelectedList = this.props.selectedIndices;
-    if (this.props.focusedIndex + 1 >= this.props.totalCount - 1) {
+    let newSelectedList = this.state.selectedIndices;
+    if (this.state.focusedIndex + 1 >= this.props.totalCount - 1) {
       return;
     }
 
-    this.toggleSelectedIndex(this.props.focusedIndex + 1);
+    this.toggleSelectedIndex(this.state.focusedIndex + 1);
 
     this.setState({
-      focusedIndex: this.props.focusedIndex + 1,
+      focusedIndex: this.state.focusedIndex + 1,
     });
   };
 
   selectPreviousElement = () => {
-    let newSelectedList = this.props.selectedIndices;
-    if (this.props.focusedIndex - 1 === 0) {
+    let newSelectedList = this.state.selectedIndices;
+    if (this.state.focusedIndex - 1 === 0) {
       return;
     }
 
-    this.toggleSelectedIndex(this.props.focusedIndex - 1);
+    this.toggleSelectedIndex(this.state.focusedIndex - 1);
 
     this.setState({
-      focusedIndex: this.props.focusedIndex - 1,
+      focusedIndex: this.state.focusedIndex - 1,
     });
   };
 
   selectCurrentElement = () => {
-    this.toggleSelectedIndex(this.props.focusedIndex);
+    this.toggleSelectedIndex(this.state.focusedIndex);
   };
 
   nextFilter = (event: KeyboardEvent) => {
     event.preventDefault();
     this.setState({
       // TODO broken
-      focusedFilter: (this.props.focusedFilter + 1) % 2,
+      focusedFilter: (this.state.focusedFilter + 1) % 2,
       focusedIndex: 0,
     });
   };
@@ -144,29 +158,34 @@ class DashboardTable extends React.Component<Props, State> {
     event.preventDefault();
     this.setState({
       // TODO broken
-      focusedFilter: (this.props.focusedFilter + 1) % 2,
+      focusedFilter: (this.state.focusedFilter + 1) % 2,
       focusedIndex: 0,
     });
   };
 
   toggleSelectedIndex = (index: number) => {
     if (
-      this.props.selectedIndices.find((currentIndex) => {
+      this.state.selectedIndices.find((currentIndex) => {
         return currentIndex === index;
       }) !== undefined
     ) {
       this.setState({
-        selectedIndices: this.props.selectedIndices.filter((selectedIndex) => {
+        selectedIndices: this.state.selectedIndices.filter((selectedIndex) => {
           return selectedIndex !== index;
         }),
       });
     } else {
-      let newList = this.props.selectedIndices;
+      let newList = this.state.selectedIndices;
       newList.push(index);
       this.setState({
         selectedIndices: newList,
       });
     }
+  };
+
+  onClickTableListing = () => {
+    const id = this.props.tableArray[this.state.focusedIndex].id;
+    this.props.onClickTableListing(id);
   };
 
   render() {
@@ -186,7 +205,22 @@ class DashboardTable extends React.Component<Props, State> {
             ) : (
               <TableListingsBody>
                 {displayItems.map((element, index) => {
-                  return this.props.tableListing(index, element);
+                  return this.props.tableListing(
+                    index,
+                    element,
+                    this.state.selectedIndices.find((currentIndex) => {
+                      return currentIndex === index;
+                    }) !== undefined,
+                    this.state.focusedIndex === index,
+                    () => {
+                      this.setState({
+                        focusedIndex: index,
+                      });
+                    },
+                    () => {
+                      this.toggleSelectedIndex(index);
+                    },
+                  );
                 })}
               </TableListingsBody>
             )}

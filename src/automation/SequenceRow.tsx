@@ -7,21 +7,18 @@ import { CurrentUserWithAutomation_currentUser_sequences } from "../graphql/gene
 type Props = {
   sequence: CurrentUserWithAutomation_currentUser_sequences;
   focused: boolean;
+  checked: boolean;
+  focusCurrentElement: () => any;
+  toggleCheckbox: () => any;
 } & RouteComponentProps;
 
-type State = {
-  checked: boolean;
-};
+type State = {};
 
 class SequenceRow extends React.Component<Props, State> {
-  state: State = {
-    checked: false,
-  };
+  state: State = {};
 
   onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      checked: !this.state.checked,
-    });
+    this.props.toggleCheckbox();
   };
 
   redirectToContact = () => {
@@ -32,7 +29,7 @@ class SequenceRow extends React.Component<Props, State> {
     return (
       <Container focused={this.props.focused} onClick={this.redirectToContact}>
         <Checkbox
-          checked={this.state.checked}
+          checked={this.props.checked}
           onChange={this.onCheckboxChange}
         />
         <Name>{this.props.sequence.name}</Name>

@@ -19,7 +19,6 @@ type Props = {
   ShortcutProps;
 
 type State = {
-  focusedIndex: number;
   automationTag: AUTOMATION_TAG;
 };
 
@@ -30,56 +29,10 @@ export enum AUTOMATION_TAG {
 
 class Automation extends React.Component<Props, State> {
   state: State = {
-    focusedIndex: 0,
     automationTag: AUTOMATION_TAG.SEQUENCE,
   };
 
-  UNSAFE_componentWillMount() {
-    this.props.manager.bind(
-      "j",
-      this.focusNextElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "k",
-      this.focusPreviousElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "tab",
-      this.toggleAutomation,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "shift+tab",
-      this.toggleAutomation,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "enter",
-      this.redirectToAutomation,
-      this.constructor.name,
-      1,
-    );
-  }
-
-  componentWillUnmount() {
-    this.props.manager.unbind("j", this.constructor.name);
-    this.props.manager.unbind("k", this.constructor.name);
-    this.props.manager.unbind("tab", this.constructor.name);
-    this.props.manager.unbind("shift+tab", this.constructor.name);
-    this.props.manager.unbind("enter", this.constructor.name);
-  }
-
-  redirectToAutomation = () => {
-    const id =
-      this.state.automationTag === AUTOMATION_TAG.SEQUENCE
-        ? this.props.user.sequences[this.state.focusedIndex].id
-        : this.props.user.templates[this.state.focusedIndex].id;
+  redirectToAutomation = (id: string) => {
     this.props.history.push(
       `/${
         this.state.automationTag === AUTOMATION_TAG.SEQUENCE
@@ -89,24 +42,6 @@ class Automation extends React.Component<Props, State> {
     );
   };
 
-  focusNextElement = () => {
-    if (this.state.focusedIndex >= this.props.user.sequences.length - 1) {
-      return;
-    }
-    this.setState({
-      focusedIndex: this.state.focusedIndex + 1,
-    });
-  };
-
-  focusPreviousElement = () => {
-    if (this.state.focusedIndex === 0) {
-      return;
-    }
-    this.setState({
-      focusedIndex: this.state.focusedIndex - 1,
-    });
-  };
-
   toggleAutomation = (event: KeyboardEvent) => {
     event.preventDefault();
     this.setState({
@@ -114,19 +49,25 @@ class Automation extends React.Component<Props, State> {
         this.state.automationTag === AUTOMATION_TAG.SEQUENCE
           ? AUTOMATION_TAG.TEMPLATE
           : AUTOMATION_TAG.SEQUENCE,
-      focusedIndex: 0,
     });
   };
 
   getTemplateListing = (
     index: number,
     element: CurrentUserWithAutomation_currentUser_templates,
+    checked: boolean,
+    focused: boolean,
+    focusCurrentElement: () => any,
+    toggleCheckbox: () => any,
   ) => {
     return (
       <TemplateRow
         key={index}
         template={element}
-        focused={this.state.focusedIndex === index}
+        checked={checked}
+        focused={focused}
+        focusCurrentElement={focusCurrentElement}
+        toggleCheckbox={toggleCheckbox}
       />
     );
   };
@@ -134,12 +75,19 @@ class Automation extends React.Component<Props, State> {
   getSequenceListing = (
     index: number,
     element: CurrentUserWithAutomation_currentUser_sequences,
+    checked: boolean,
+    focused: boolean,
+    focusCurrentElement: () => any,
+    toggleCheckbox: () => any,
   ) => {
     return (
       <SequenceRow
         key={index}
         sequence={element}
-        focused={this.state.focusedIndex === index}
+        checked={checked}
+        focused={focused}
+        focusCurrentElement={focusCurrentElement}
+        toggleCheckbox={toggleCheckbox}
       />
     );
   };
@@ -152,7 +100,6 @@ class Automation extends React.Component<Props, State> {
           currentAutomationTag={this.state.automationTag}
         />
         <Table
-          attributes={[]}
           onNextPage={() => {}}
           onPreviousPage={() => {}}
           currentPage={0}
@@ -170,6 +117,7 @@ class Automation extends React.Component<Props, State> {
               ? this.getSequenceListing
               : this.getTemplateListing
           }
+          onClickTableListing={this.redirectToAutomation}
         />
       </Container>
     );
