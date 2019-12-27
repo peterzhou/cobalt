@@ -1,12 +1,14 @@
 import styled from "@emotion/styled";
 import * as React from "react";
+import withShortcuts from "../shortcuts/withShortcuts";
+import { ShortcutProps } from "../types";
 import LoadingScreen from "./LoadingScreen";
 
 type Props = {
   loading?: boolean;
-  attributes: string[];
   onClickHeader?: () => any;
   tableListing: (index: number, element: any) => any;
+  onClickTableListing: () => any;
   tableArray: any[];
   currentPage: number;
   onNextPage: () => any;
@@ -16,55 +18,212 @@ type Props = {
   totalCount: number;
   elementName: string;
   notPaginated?: boolean;
-};
+  focusedIndex: number;
+  selectedIndices: number[];
+  focusedFilter: number;
+} & ShortcutProps;
 
-function DashboardTable(props: Props) {
-  const { tableArray } = props;
-  const currentPage = props.currentPage ? props.currentPage : 0;
+type State = {};
 
-  const displayItems = props.notPaginated ? tableArray : tableArray;
+class DashboardTable extends React.Component<Props, State> {
+  UNSAFE_componentWillMount() {
+    this.props.manager.bind(
+      "j",
+      this.focusNextElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "k",
+      this.focusPreviousElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind("tab", this.nextFilter, this.constructor.name, 1);
+    this.props.manager.bind(
+      "shift+tab",
+      this.previousFilter,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "enter",
+      this.props.onClickTableListing,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "shift+j",
+      this.selectNextElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "shift+k",
+      this.selectPreviousElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "space",
+      this.selectCurrentElement,
+      this.constructor.name,
+      1,
+    );
+  }
 
-  return (
-    <TableContainer>
-      <TableBody>
-        <TableListings>
-          {props.loading ? (
-            <TableListingsBody>
-              <LoadingScreen />
-            </TableListingsBody>
-          ) : (
-            <TableListingsBody>
-              {displayItems.map((element, index) => {
-                return props.tableListing(index, element);
-              })}
-            </TableListingsBody>
-          )}
-        </TableListings>
-      </TableBody>
-      {!props.loading && (
-        <TableFooter>
-          <NumberOfRows>
-            {"{"}start{"}"} - {"{"}finish{"}"} of {"{total}"} {"{elementName}"}
-          </NumberOfRows>
-          <PaginationSelector>
-            <PaginationButton
-              onClick={!props.disablePrevious ? props.onPreviousPage : () => {}}
-              disabled={props.disablePrevious}>
-              Previous
-            </PaginationButton>
-            <PaginationButton
-              onClick={!props.disableNext ? props.onNextPage : () => {}}
-              disabled={props.disableNext}>
-              Next
-            </PaginationButton>
-          </PaginationSelector>
-        </TableFooter>
-      )}
-    </TableContainer>
-  );
+  componentWillUnmount() {
+    this.props.manager.unbind("j", this.constructor.name);
+    this.props.manager.unbind("k", this.constructor.name);
+    this.props.manager.unbind("tab", this.constructor.name);
+    this.props.manager.unbind("shift+tab", this.constructor.name);
+    this.props.manager.unbind("enter", this.constructor.name);
+    this.props.manager.unbind("shift+j", this.constructor.name);
+    this.props.manager.unbind("shift+k", this.constructor.name);
+    this.props.manager.unbind("space", this.constructor.name);
+  }
+
+  focusNextElement = () => {
+    if (this.props.focusedIndex >= this.props.totalCount - 1) {
+      return;
+    }
+    this.setState({
+      focusedIndex: this.props.focusedIndex + 1,
+    });
+  };
+
+  focusPreviousElement = () => {
+    if (this.props.focusedIndex === 0) {
+      return;
+    }
+    this.setState({
+      focusedIndex: this.props.focusedIndex - 1,
+    });
+  };
+
+  selectNextElement = () => {
+    let newSelectedList = this.props.selectedIndices;
+    if (this.props.focusedIndex + 1 >= this.props.totalCount - 1) {
+      return;
+    }
+
+    this.toggleSelectedIndex(this.props.focusedIndex + 1);
+
+    this.setState({
+      focusedIndex: this.props.focusedIndex + 1,
+    });
+  };
+
+  selectPreviousElement = () => {
+    let newSelectedList = this.props.selectedIndices;
+    if (this.props.focusedIndex - 1 === 0) {
+      return;
+    }
+
+    this.toggleSelectedIndex(this.props.focusedIndex - 1);
+
+    this.setState({
+      focusedIndex: this.props.focusedIndex - 1,
+    });
+  };
+
+  selectCurrentElement = () => {
+    this.toggleSelectedIndex(this.props.focusedIndex);
+  };
+
+  nextFilter = (event: KeyboardEvent) => {
+    event.preventDefault();
+    this.setState({
+      // TODO broken
+      focusedFilter: (this.props.focusedFilter + 1) % 2,
+      focusedIndex: 0,
+    });
+  };
+
+  previousFilter = (event: KeyboardEvent) => {
+    event.preventDefault();
+    this.setState({
+      // TODO broken
+      focusedFilter: (this.props.focusedFilter + 1) % 2,
+      focusedIndex: 0,
+    });
+  };
+
+  toggleSelectedIndex = (index: number) => {
+    if (
+      this.props.selectedIndices.find((currentIndex) => {
+        return currentIndex === index;
+      }) !== undefined
+    ) {
+      this.setState({
+        selectedIndices: this.props.selectedIndices.filter((selectedIndex) => {
+          return selectedIndex !== index;
+        }),
+      });
+    } else {
+      let newList = this.props.selectedIndices;
+      newList.push(index);
+      this.setState({
+        selectedIndices: newList,
+      });
+    }
+  };
+
+  render() {
+    const { tableArray } = this.props;
+    const currentPage = this.props.currentPage ? this.props.currentPage : 0;
+
+    const displayItems = this.props.notPaginated ? tableArray : tableArray;
+
+    return (
+      <TableContainer>
+        <TableBody>
+          <TableListings>
+            {this.props.loading ? (
+              <TableListingsBody>
+                <LoadingScreen />
+              </TableListingsBody>
+            ) : (
+              <TableListingsBody>
+                {displayItems.map((element, index) => {
+                  return this.props.tableListing(index, element);
+                })}
+              </TableListingsBody>
+            )}
+          </TableListings>
+        </TableBody>
+        {!this.props.loading && (
+          <TableFooter>
+            <NumberOfRows>
+              {"{"}start{"}"} - {"{"}finish{"}"} of {"{total}"}{" "}
+              {"{elementName}"}
+            </NumberOfRows>
+            <PaginationSelector>
+              <PaginationButton
+                onClick={
+                  !this.props.disablePrevious
+                    ? this.props.onPreviousPage
+                    : () => {}
+                }
+                disabled={this.props.disablePrevious}>
+                Previous
+              </PaginationButton>
+              <PaginationButton
+                onClick={
+                  !this.props.disableNext ? this.props.onNextPage : () => {}
+                }
+                disabled={this.props.disableNext}>
+                Next
+              </PaginationButton>
+            </PaginationSelector>
+          </TableFooter>
+        )}
+      </TableContainer>
+    );
+  }
 }
 
-export default DashboardTable;
+export default withShortcuts(DashboardTable);
 
 const TableContainer = styled.div`
   display: flex;

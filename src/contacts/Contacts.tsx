@@ -31,130 +31,9 @@ class Contacts extends React.Component<Props, State> {
     focusedFilter: 0,
   };
 
-  UNSAFE_componentWillMount() {
-    this.props.manager.bind(
-      "j",
-      this.focusNextElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "k",
-      this.focusPreviousElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind("tab", this.nextFilter, this.constructor.name, 1);
-    this.props.manager.bind(
-      "shift+tab",
-      this.previousFilter,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "enter",
-      this.redirectToContact,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "shift+j",
-      this.selectNextElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "shift+k",
-      this.selectPreviousElement,
-      this.constructor.name,
-      1,
-    );
-    this.props.manager.bind(
-      "space",
-      this.selectCurrentElement,
-      this.constructor.name,
-      1,
-    );
-  }
-
-  componentWillUnmount() {
-    this.props.manager.unbind("j", this.constructor.name);
-    this.props.manager.unbind("k", this.constructor.name);
-    this.props.manager.unbind("tab", this.constructor.name);
-    this.props.manager.unbind("shift+tab", this.constructor.name);
-    this.props.manager.unbind("enter", this.constructor.name);
-    this.props.manager.unbind("shift+j", this.constructor.name);
-    this.props.manager.unbind("shift+k", this.constructor.name);
-    this.props.manager.unbind("space", this.constructor.name);
-  }
-
   redirectToContact = () => {
     const contactId = this.props.user.contacts[this.state.focusedIndex].id;
     this.props.history.push(`/contact?id=${contactId}`);
-  };
-
-  focusNextElement = () => {
-    if (this.state.focusedIndex >= this.props.user.contacts.length - 1) {
-      return;
-    }
-    this.setState({
-      focusedIndex: this.state.focusedIndex + 1,
-    });
-  };
-
-  focusPreviousElement = () => {
-    if (this.state.focusedIndex === 0) {
-      return;
-    }
-    this.setState({
-      focusedIndex: this.state.focusedIndex - 1,
-    });
-  };
-
-  selectNextElement = () => {
-    let newSelectedList = this.state.selectedIndices;
-    if (this.state.focusedIndex + 1 >= this.props.user.contacts.length - 1) {
-      return;
-    }
-
-    this.toggleSelectedIndex(this.state.focusedIndex + 1);
-
-    this.setState({
-      focusedIndex: this.state.focusedIndex + 1,
-    });
-  };
-
-  selectPreviousElement = () => {
-    let newSelectedList = this.state.selectedIndices;
-    if (this.state.focusedIndex - 1 === 0) {
-      return;
-    }
-
-    this.toggleSelectedIndex(this.state.focusedIndex - 1);
-
-    this.setState({
-      focusedIndex: this.state.focusedIndex - 1,
-    });
-  };
-
-  selectCurrentElement = () => {
-    this.toggleSelectedIndex(this.state.focusedIndex);
-  };
-
-  nextFilter = (event: KeyboardEvent) => {
-    event.preventDefault();
-    this.setState({
-      focusedFilter: (this.state.focusedFilter + 1) % FILTERS.length,
-      focusedIndex: 0,
-    });
-  };
-
-  previousFilter = (event: KeyboardEvent) => {
-    event.preventDefault();
-    this.setState({
-      focusedFilter: (this.state.focusedFilter + 1) % FILTERS.length,
-      focusedIndex: 0,
-    });
   };
 
   getContactListing = (index: number, element: Contact) => {
@@ -173,29 +52,11 @@ class Contacts extends React.Component<Props, State> {
             focusedIndex: index,
           });
         }}
-        toggleCheckbox={() => {}}
+        toggleCheckbox={() => {
+          this.toggleSelectedIndex(index);
+        }}
       />
     );
-  };
-
-  toggleSelectedIndex = (index: number) => {
-    if (
-      this.state.selectedIndices.find((currentIndex) => {
-        return currentIndex === index;
-      }) !== undefined
-    ) {
-      this.setState({
-        selectedIndices: this.state.selectedIndices.filter((selectedIndex) => {
-          return selectedIndex !== index;
-        }),
-      });
-    } else {
-      let newList = this.state.selectedIndices;
-      newList.push(index);
-      this.setState({
-        selectedIndices: newList,
-      });
-    }
   };
 
   render() {
