@@ -104,7 +104,11 @@ class Automation extends React.Component<Props, State> {
           onPreviousPage={() => {}}
           currentPage={0}
           disablePrevious={false}
-          totalCount={100}
+          totalCount={
+            this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+              ? this.props.user.sequences.length
+              : this.props.user.templates.length
+          }
           elementName="Contacts"
           disableNext={false}
           tableArray={
