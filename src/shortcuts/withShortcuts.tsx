@@ -3,9 +3,7 @@ import * as React from "react";
 import { ShortcutProps } from "../types";
 import ShortcutContext, { ShortcutContextType } from "./ShortcutContext";
 
-const withTranslation = <P extends object>(
-  Component: React.ComponentType<P>,
-) => {
+const withShortcuts = <P extends object>(Component: React.ComponentType<P>) => {
   type WrappedComponentPropsExceptProvided = Exclude<
     keyof P,
     keyof ShortcutProps
@@ -28,4 +26,4 @@ const withTranslation = <P extends object>(
   );
 };
 
-export default withTranslation;
+export default withShortcuts;

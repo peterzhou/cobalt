@@ -85,6 +85,7 @@ class Contacts extends React.Component<Props, State> {
     this.props.manager.unbind("enter", this.constructor.name);
     this.props.manager.unbind("shift+j", this.constructor.name);
     this.props.manager.unbind("shift+k", this.constructor.name);
+    this.props.manager.unbind("space", this.constructor.name);
   }
 
   redirectToContact = () => {
@@ -111,11 +112,29 @@ class Contacts extends React.Component<Props, State> {
   };
 
   selectNextElement = () => {
-    console.log("SELECT NEXT ELEMENT");
+    let newSelectedList = this.state.selectedIndices;
+    if (this.state.focusedIndex + 1 >= this.props.user.contacts.length - 1) {
+      return;
+    }
+
+    this.toggleSelectedIndex(this.state.focusedIndex + 1);
+
+    this.setState({
+      focusedIndex: this.state.focusedIndex + 1,
+    });
   };
 
   selectPreviousElement = () => {
-    console.log("SELECT PREVIOUS ELEMENT");
+    let newSelectedList = this.state.selectedIndices;
+    if (this.state.focusedIndex - 1 === 0) {
+      return;
+    }
+
+    this.toggleSelectedIndex(this.state.focusedIndex - 1);
+
+    this.setState({
+      focusedIndex: this.state.focusedIndex - 1,
+    });
   };
 
   selectCurrentElement = () => {
