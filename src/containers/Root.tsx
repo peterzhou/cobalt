@@ -11,6 +11,7 @@ import AutomationPage from "./AutomationPage";
 import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
+import SequencePage from "./SequencePage";
 import SettingsPage from "./SettingsPage";
 
 const client = new ApolloClient<InMemoryCache>({
@@ -39,6 +40,7 @@ export default function Root() {
               <Route path="/settings" component={SettingsPage} />
               <Route path="/contacts" component={ContactsPage} />
               <Route path="/contact" component={ContactPage} />
+              <Route path="/sequence" component={SequencePage} />
               <Route path="/home" component={HomePage} />
               <Route path="/" component={AuthPage} />
             </Switch>

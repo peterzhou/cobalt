@@ -31,7 +31,7 @@ export enum AUTOMATION_TAG {
 class Automation extends React.Component<Props, State> {
   state: State = {
     focusedIndex: 0,
-    automationTag: AUTOMATION_TAG.TEMPLATE,
+    automationTag: AUTOMATION_TAG.SEQUENCE,
   };
 
   UNSAFE_componentWillMount() {
@@ -61,7 +61,7 @@ class Automation extends React.Component<Props, State> {
     );
     this.props.manager.bind(
       "enter",
-      this.redirectToContact,
+      this.redirectToAutomation,
       this.constructor.name,
       1,
     );
@@ -75,9 +75,18 @@ class Automation extends React.Component<Props, State> {
     this.props.manager.unbind("enter", this.constructor.name);
   }
 
-  redirectToContact = () => {
-    const contactId = this.props.user.sequences[this.state.focusedIndex].id;
-    this.props.history.push(`/contact?id=${contactId}`);
+  redirectToAutomation = () => {
+    const id =
+      this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+        ? this.props.user.sequences[this.state.focusedIndex].id
+        : this.props.user.templates[this.state.focusedIndex].id;
+    this.props.history.push(
+      `/${
+        this.state.automationTag === AUTOMATION_TAG.SEQUENCE
+          ? "sequence"
+          : "template"
+      }?id=${id}`,
+    );
   };
 
   focusNextElement = () => {

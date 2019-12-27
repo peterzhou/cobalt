@@ -51,6 +51,15 @@ export const CURRENT_USER_WITH_SEQUENCE = gql`
       sequence(id: $id) {
         id
         name
+        steps {
+          id
+          index
+          template {
+            id
+            name
+            content
+          }
+        }
       }
     }
   }

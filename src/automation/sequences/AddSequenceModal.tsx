@@ -1,31 +1,31 @@
 import styled from "@emotion/styled";
 import * as React from "react";
 import { Mutation, MutationFunction, MutationResult } from "react-apollo";
-import ReactQuill from "react-quill";
-import ClickOutside from "../components/ClickOutside";
-import Command from "../components/icons/Keys/Command";
-import Enter from "../components/icons/Keys/Enter";
-import Input from "../components/Input";
-import Shortcut from "../components/Shortcut";
-import { Button } from "../components/StyledComponents";
-import { CurrentUserWithAutomation_currentUser } from "../graphql/generated/types";
-import { CREATE_TEMPLATE } from "../graphql/mutations";
-import { CURRENT_USER_WITH_AUTOMATION } from "../graphql/queries";
-import withShortcuts from "../shortcuts/withShortcuts";
-import { ShortcutProps } from "../types";
-import "./react-quill.css";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import ClickOutside from "../../components/ClickOutside";
+import Command from "../../components/icons/Keys/Command";
+import Enter from "../../components/icons/Keys/Enter";
+import Input from "../../components/Input";
+import Shortcut from "../../components/Shortcut";
+import { Button } from "../../components/StyledComponents";
+import { CurrentUserWithAutomation_currentUser } from "../../graphql/generated/types";
+import { CREATE_SEQUENCE } from "../../graphql/mutations";
+import { CURRENT_USER_WITH_AUTOMATION } from "../../graphql/queries";
+import withShortcuts from "../../shortcuts/withShortcuts";
+import { ShortcutProps } from "../../types";
 
 type Props = {
   user: CurrentUserWithAutomation_currentUser;
   onHideModal: () => any;
-} & ShortcutProps;
+} & ShortcutProps &
+  RouteComponentProps;
 
 type State = {
   name: string;
   content: string;
 };
 
-class AddAutomationModal extends React.Component<Props, State> {
+class AddSequenceModal extends React.Component<Props, State> {
   submitFunction: any = null;
   commandSubmitFunction: any = null;
 
@@ -83,7 +83,10 @@ class AddAutomationModal extends React.Component<Props, State> {
     return true;
   };
 
-  onCreateTemplate = (data: any) => {};
+  onCreateSequence = (data: any) => {
+    const id = data.createSequence.id;
+    this.props.history.push(`/sequence?id=${id}`);
+  };
 
   onChangeContent = (value: string) => {
     this.setState({
@@ -100,11 +103,11 @@ class AddAutomationModal extends React.Component<Props, State> {
               ev.stopPropagation();
             }}>
             <Mutation
-              mutation={CREATE_TEMPLATE}
-              onCompleted={this.onCreateTemplate}
+              mutation={CREATE_SEQUENCE}
+              onCompleted={this.onCreateSequence}
               refetchQueries={[{ query: CURRENT_USER_WITH_AUTOMATION }]}>
               {(
-                createTemplate: MutationFunction,
+                createSequence: MutationFunction,
                 { data, loading }: MutationResult,
               ) => {
                 const submit = () => {
@@ -112,28 +115,31 @@ class AddAutomationModal extends React.Component<Props, State> {
                     return;
                   }
 
-                  createTemplate({
+                  createSequence({
                     variables: {
                       input: {
                         name: this.state.name,
-                        content: this.state.content,
+                        templates: [],
                       },
                     },
                     optimisticResponse: {
-                      createTemplate: {},
+                      createSequence: {
+                        name: this.state.name,
+                        templates: [],
+                      },
                     },
                   });
                 };
 
                 this.props.manager.updateCallback(
                   "command+enter",
-                  createTemplate,
+                  createSequence,
                   this.constructor.name,
                 );
 
                 return (
                   <Modal>
-                    <Header>New Template</Header>
+                    <Header>New Sequence</Header>
                     <Body>
                       <Label>Name</Label>
                       <StyledInput
@@ -152,11 +158,6 @@ class AddAutomationModal extends React.Component<Props, State> {
                           },
                         ]}
                         autoFocus
-                      />
-                      <ReactQuill
-                        theme="snow"
-                        value={this.state.content}
-                        onChange={this.onChangeContent}
                       />
                       <ButtonRow>
                         <CreateButton onClick={submit}>
@@ -180,7 +181,7 @@ class AddAutomationModal extends React.Component<Props, State> {
   }
 }
 
-export default withShortcuts(AddAutomationModal);
+export default withRouter(withShortcuts(AddSequenceModal));
 
 const StyledShortcut = styled(Shortcut)`
   margin-left: 4px;

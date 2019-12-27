@@ -4,8 +4,9 @@ import Plus from "../components/icons/Plus";
 import { CurrentUserWithAutomation_currentUser } from "../graphql/generated/types";
 import withShortcuts from "../shortcuts/withShortcuts";
 import { ShortcutProps } from "../types";
-import AddAutomationModal from "./AddAutomationModal";
 import { AUTOMATION_TAG } from "./Automation";
+import AddSequenceModal from "./sequences/AddSequenceModal";
+import AddTemplateModal from "./templates/AddTemplateModal";
 
 type Props = {
   user: CurrentUserWithAutomation_currentUser;
@@ -13,19 +14,19 @@ type Props = {
 } & ShortcutProps;
 
 type State = {
-  showNewTemplateModal: boolean;
+  showNewAutomationModal: boolean;
 };
 
 class AutomationHeader extends React.Component<Props, State> {
   state: State = {
-    showNewTemplateModal: false,
+    showNewAutomationModal: false,
   };
 
   UNSAFE_componentWillMount() {
     this.props.manager.bind(
       "n",
       (event: any) => {
-        this.showNewTemplateModal();
+        this.showNewAutomationModal();
         event.preventDefault();
       },
       this.constructor.name,
@@ -37,15 +38,15 @@ class AutomationHeader extends React.Component<Props, State> {
     this.props.manager.unbind("n", this.constructor.name);
   }
 
-  showNewTemplateModal = () => {
+  showNewAutomationModal = () => {
     this.setState({
-      showNewTemplateModal: true,
+      showNewAutomationModal: true,
     });
   };
 
   hideNewTemplateModal = () => {
     this.setState({
-      showNewTemplateModal: false,
+      showNewAutomationModal: false,
     });
   };
 
@@ -62,15 +63,23 @@ class AutomationHeader extends React.Component<Props, State> {
           key={AUTOMATION_TAG.TEMPLATE}>
           Templates
         </FilterContainer>
-        <NewTemplateButton onClick={this.showNewTemplateModal}>
+        <NewTemplateButton onClick={this.showNewAutomationModal}>
           <Plus />
         </NewTemplateButton>
-        {this.state.showNewTemplateModal && (
-          <AddAutomationModal
-            user={this.props.user}
-            onHideModal={this.hideNewTemplateModal}
-          />
-        )}
+        {this.state.showNewAutomationModal &&
+          this.props.currentAutomationTag === AUTOMATION_TAG.TEMPLATE && (
+            <AddTemplateModal
+              user={this.props.user}
+              onHideModal={this.hideNewTemplateModal}
+            />
+          )}
+        {this.state.showNewAutomationModal &&
+          this.props.currentAutomationTag === AUTOMATION_TAG.SEQUENCE && (
+            <AddSequenceModal
+              user={this.props.user}
+              onHideModal={this.hideNewTemplateModal}
+            />
+          )}
       </Header>
     );
   }
