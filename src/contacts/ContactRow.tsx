@@ -6,33 +6,27 @@ import { Contact } from "../types";
 type Props = {
   contact: Contact;
   focused: boolean;
+  checked: boolean;
+  focusCurrentElement: () => any;
+  toggleCheckbox: () => any;
 } & RouteComponentProps;
 
-type State = {
-  checked: boolean;
-};
+type State = {};
 
 class ContactRow extends React.Component<Props, State> {
-  state: State = {
-    checked: false,
-  };
-
-  onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      checked: !this.state.checked,
-    });
-  };
-
   redirectToContact = () => {
     this.props.history.push(`/contact?id=${this.props.contact.id}`);
   };
 
   render() {
     return (
-      <Container focused={this.props.focused} onClick={this.redirectToContact}>
+      <Container
+        focused={this.props.focused}
+        onClick={this.redirectToContact}
+        onMouseEnter={this.props.focusCurrentElement}>
         <Checkbox
-          checked={this.state.checked}
-          onChange={this.onCheckboxChange}
+          checked={this.props.checked}
+          onChange={this.props.toggleCheckbox}
         />
         <Name>
           {this.props.contact.firstName} {this.props.contact.lastName}

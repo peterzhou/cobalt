@@ -14,6 +14,7 @@ type Props = {
   ShortcutProps;
 
 type State = {
+  selectedIndices: number[];
   focusedIndex: number;
   focusedFilter: number;
 };
@@ -25,6 +26,7 @@ const FILTERS = [
 
 class Contacts extends React.Component<Props, State> {
   state: State = {
+    selectedIndices: [],
     focusedIndex: 0,
     focusedFilter: 0,
   };
@@ -55,6 +57,24 @@ class Contacts extends React.Component<Props, State> {
       this.constructor.name,
       1,
     );
+    this.props.manager.bind(
+      "shift+j",
+      this.selectNextElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "shift+k",
+      this.selectPreviousElement,
+      this.constructor.name,
+      1,
+    );
+    this.props.manager.bind(
+      "space",
+      this.selectCurrentElement,
+      this.constructor.name,
+      1,
+    );
   }
 
   componentWillUnmount() {
@@ -63,6 +83,8 @@ class Contacts extends React.Component<Props, State> {
     this.props.manager.unbind("tab", this.constructor.name);
     this.props.manager.unbind("shift+tab", this.constructor.name);
     this.props.manager.unbind("enter", this.constructor.name);
+    this.props.manager.unbind("shift+j", this.constructor.name);
+    this.props.manager.unbind("shift+k", this.constructor.name);
   }
 
   redirectToContact = () => {
@@ -88,6 +110,18 @@ class Contacts extends React.Component<Props, State> {
     });
   };
 
+  selectNextElement = () => {
+    console.log("SELECT NEXT ELEMENT");
+  };
+
+  selectPreviousElement = () => {
+    console.log("SELECT PREVIOUS ELEMENT");
+  };
+
+  selectCurrentElement = () => {
+    this.toggleSelectedIndex(this.state.focusedIndex);
+  };
+
   nextFilter = (event: KeyboardEvent) => {
     event.preventDefault();
     this.setState({
@@ -109,9 +143,40 @@ class Contacts extends React.Component<Props, State> {
       <ContactRow
         key={index}
         contact={element}
+        checked={
+          this.state.selectedIndices.find((currentIndex) => {
+            return currentIndex === index;
+          }) !== undefined
+        }
         focused={this.state.focusedIndex === index}
+        focusCurrentElement={() => {
+          this.setState({
+            focusedIndex: index,
+          });
+        }}
+        toggleCheckbox={() => {}}
       />
     );
+  };
+
+  toggleSelectedIndex = (index: number) => {
+    if (
+      this.state.selectedIndices.find((currentIndex) => {
+        return currentIndex === index;
+      }) !== undefined
+    ) {
+      this.setState({
+        selectedIndices: this.state.selectedIndices.filter((selectedIndex) => {
+          return selectedIndex !== index;
+        }),
+      });
+    } else {
+      let newList = this.state.selectedIndices;
+      newList.push(index);
+      this.setState({
+        selectedIndices: newList,
+      });
+    }
   };
 
   render() {
