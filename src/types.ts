@@ -45,3 +45,7 @@ export enum CREATE_CONTACT_ERROR {
 export enum SEND_DRAFT_ERROR {
   EMAIL = "EMAIL",
 }
+
+export enum CREATE_TEMPLATE_ERROR {
+  NAME = "NAME",
+}

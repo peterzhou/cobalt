@@ -7,9 +7,11 @@ import AuthPage from "../AuthPage";
 import ShortcutContext from "../shortcuts/shortcutContext";
 import ShortcutManager from "../shortcuts/ShortcutManager";
 import { getBackendUrl } from "../utils";
+import AutomationPage from "./AutomationPage";
 import ContactPage from "./ContactPage";
 import ContactsPage from "./ContactsPage";
 import HomePage from "./HomePage";
+import SequencePage from "./SequencePage";
 import SettingsPage from "./SettingsPage";
 
 const client = new ApolloClient<InMemoryCache>({
@@ -34,9 +36,11 @@ export default function Root() {
         <ShortcutContext.Provider value={{ manager: shortcutManager }}>
           <ApolloProvider client={client}>
             <Switch>
+              <Route path="/automation" component={AutomationPage} />
               <Route path="/settings" component={SettingsPage} />
               <Route path="/contacts" component={ContactsPage} />
               <Route path="/contact" component={ContactPage} />
+              <Route path="/sequence" component={SequencePage} />
               <Route path="/home" component={HomePage} />
               <Route path="/" component={AuthPage} />
             </Switch>

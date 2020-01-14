@@ -2,9 +2,10 @@ import styled from "@emotion/styled";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import Checkbox from "../components/Checkbox";
-import { Contact } from "../types";
+import { CurrentUserWithAutomation_currentUser_templates } from "../graphql/generated/types";
+
 type Props = {
-  contact: Contact;
+  template: CurrentUserWithAutomation_currentUser_templates;
   focused: boolean;
   checked: boolean;
   focusCurrentElement: () => any;
@@ -13,30 +14,31 @@ type Props = {
 
 type State = {};
 
-class ContactRow extends React.Component<Props, State> {
+class TemplateRow extends React.Component<Props, State> {
+  state: State = {};
+
+  onCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.props.toggleCheckbox();
+  };
+
   redirectToContact = () => {
-    this.props.history.push(`/contact?id=${this.props.contact.id}`);
+    this.props.history.push(`/template?id=${this.props.template.id}`);
   };
 
   render() {
     return (
-      <Container
-        focused={this.props.focused}
-        onClick={this.redirectToContact}
-        onMouseEnter={this.props.focusCurrentElement}>
+      <Container focused={this.props.focused} onClick={this.redirectToContact}>
         <Checkbox
           checked={this.props.checked}
-          onChange={this.props.toggleCheckbox}
+          onChange={this.onCheckboxChange}
         />
-        <Name>
-          {this.props.contact.firstName} {this.props.contact.lastName}
-        </Name>
+        <Name>{this.props.template.name}</Name>
       </Container>
     );
   }
 }
 
-export default withRouter(ContactRow);
+export default withRouter(TemplateRow);
 
 const Container = styled.div<{ focused: boolean }>`
   display: flex;

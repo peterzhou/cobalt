@@ -15,10 +15,20 @@ type Props = {
 type State = {};
 
 class InputWithShortcuts extends React.Component<Props, State> {
+  inputRef = React.createRef<HTMLInputElement>();
+
   map: any = {};
 
+  focus = () => {
+    this.inputRef.current && this.inputRef.current.focus();
+  };
+
   checkShortcutFired = () => {
+    let shortcutFired = false;
     this.props.shortcuts.forEach((shortcut) => {
+      if (shortcutFired) {
+        return;
+      }
       let fireShortcut = true;
       shortcut.keys.forEach((key) => {
         if (!this.map[key]) {
@@ -27,6 +37,7 @@ class InputWithShortcuts extends React.Component<Props, State> {
       });
 
       if (fireShortcut) {
+        shortcutFired = true;
         shortcut.callback();
       }
     });
@@ -34,8 +45,6 @@ class InputWithShortcuts extends React.Component<Props, State> {
 
   onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     this.map[event.key] = true;
-
-    console.log(this.map);
 
     this.checkShortcutFired();
     if (this.props.onKeyDown) {
@@ -46,8 +55,6 @@ class InputWithShortcuts extends React.Component<Props, State> {
   onKeyUp = (event: React.KeyboardEvent<HTMLInputElement>) => {
     this.map[event.key] = false;
 
-    console.log(this.map);
-
     if (this.props.onKeyUp) {
       this.props.onKeyUp(event);
     }
@@ -56,6 +63,7 @@ class InputWithShortcuts extends React.Component<Props, State> {
   render() {
     return (
       <Input
+        ref={this.inputRef}
         {...this.props}
         onKeyDown={this.onKeyDown}
         onKeyUp={this.onKeyUp}></Input>

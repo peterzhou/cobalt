@@ -23,6 +23,11 @@ module.exports = merge(baseConfig, {
     loaders: [
       // Extract all .global.css to style.css as is
       {
+        test: /\.(css)$/,
+        include: [/node_modules/],
+        use: ["style-loader", "css-loader"],
+      },
+      {
         test: /\.(scss|sass)$/,
         use: ExtractTextPlugin.extract({
           use: [
@@ -33,9 +38,6 @@ module.exports = merge(baseConfig, {
                 importLoaders: 1,
                 localIdentName: "[name]__[local]__[hash:base64:5]",
               },
-            },
-            {
-              loader: "sass-loader",
             },
           ],
         }),

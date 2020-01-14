@@ -42,3 +42,51 @@ export const CURRENT_USER_WITH_GOOGLE_AUTH = gql`
     }
   }
 `;
+
+export const CURRENT_USER_WITH_SEQUENCE = gql`
+  query CurrentUserWithSequence($id: ID!) {
+    currentUser {
+      id
+      email
+      sequence(id: $id) {
+        id
+        name
+        steps {
+          id
+          index
+          template {
+            id
+            name
+            content
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const CURRENT_USER_WITH_AUTOMATION = gql`
+  query CurrentUserWithAutomation {
+    currentUser {
+      id
+      email
+      sequences {
+        id
+        name
+        steps {
+          id
+          index
+          template {
+            id
+            content
+          }
+        }
+      }
+      templates {
+        id
+        name
+        content
+      }
+    }
+  }
+`;
