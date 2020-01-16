@@ -109,6 +109,9 @@ class AddContactModal extends React.Component<Props, State> {
   };
 
   onCreateContact = (data: any) => {
+    console.log("CREATED");
+    console.log(data);
+
     if (this.state.anotherContact) {
       this.setState({
         email: "",

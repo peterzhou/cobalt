@@ -3,7 +3,7 @@ import * as React from "react";
 import { Mutation, MutationFunction, MutationResult } from "react-apollo";
 import Input from "../components/Input";
 import { CurrentUserWithContact_currentUser_contact } from "../graphql/generated/types";
-import { SEND_DRAFT } from "../graphql/mutations";
+import { SEND_EMAIL } from "../graphql/mutations";
 import { CURRENT_USER_WITH_CONTACT } from "../graphql/queries";
 import withShortcuts from "../shortcuts/withShortcuts";
 import { SEND_DRAFT_ERROR, ShortcutProps } from "../types";
@@ -93,7 +93,7 @@ class Draft extends React.Component<Props, State> {
     return (
       <Container>
         <Mutation
-          mutation={SEND_DRAFT}
+          mutation={SEND_EMAIL}
           onCompleted={this.onSentDraft}
           refetchQueries={[
             {
@@ -101,13 +101,13 @@ class Draft extends React.Component<Props, State> {
               variables: { id: this.props.contact.id },
             },
           ]}>
-          {(sendDraft: MutationFunction, { data, loading }: MutationResult) => {
+          {(sendEmail: MutationFunction, { data, loading }: MutationResult) => {
             const submit = () => {
               if (!this.validateFields()) {
                 return;
               }
 
-              sendDraft({
+              sendEmail({
                 variables: {
                   input: {
                     toEmails: this.state.toEmails,
